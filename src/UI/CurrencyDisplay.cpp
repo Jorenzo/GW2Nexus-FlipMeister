@@ -7,17 +7,23 @@ void CurrencyDisplay::SetupResources(EntryData* Entry)
   Entry->APIDefs->LoadTextureFromURL(TEX_COPPER, "https://wiki.guildwars2.com", "/images/thumb/e/eb/Copper_coin.png/18px-Copper_coin.png", nullptr);
 }
 
-void CurrencyDisplay::Render(EntryData* Entry, unsigned int value)
+void CurrencyDisplay::Render(EntryData* Entry, int value)
 {
-  unsigned int copper = value % 100;
-  value /= 100;
-  unsigned int silver = value % 100;
-  unsigned int gold = value / 100;
+  int absValue = abs(value);
+  int copper = absValue % 100;
+  absValue /= 100;
+  int silver = absValue % 100;
+  int gold = absValue / 100;
+
+  bool sign = (value < 0);
 
   if (gold > 0)
   {
     ImGui::PushStyleColor(ImGuiCol_Text, COL_GOLD);
-    ImGui::Text("%i", gold);
+    if (sign)
+      ImGui::Text("-%i", gold);
+    else
+      ImGui::Text("%i", gold);
     ImGui::PopStyleColor();
     if (Texture* tex = Entry->APIDefs->GetTexture(TEX_GOLD))
     {
@@ -29,7 +35,10 @@ void CurrencyDisplay::Render(EntryData* Entry, unsigned int value)
   if (gold > 0 || silver > 0)
   {
     ImGui::PushStyleColor(ImGuiCol_Text, COL_SILVER);
-    ImGui::Text("%i", silver);
+    if (sign && gold == 0)
+      ImGui::Text("-%i", silver);
+    else
+      ImGui::Text("%i", silver);
     ImGui::PopStyleColor();
     if (Texture* tex = Entry->APIDefs->GetTexture(TEX_SILVER))
     {
@@ -39,7 +48,10 @@ void CurrencyDisplay::Render(EntryData* Entry, unsigned int value)
     ImGui::SameLine();
   }
   ImGui::PushStyleColor(ImGuiCol_Text, COL_COPPER);
-  ImGui::Text("%i", copper);
+  if (sign && gold == 0 && silver == 0)
+    ImGui::Text("-%i", copper);
+  else
+    ImGui::Text("%i", copper);
   ImGui::PopStyleColor();
   if (Texture* tex = Entry->APIDefs->GetTexture(TEX_COPPER))
   {

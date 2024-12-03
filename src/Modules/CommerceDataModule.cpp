@@ -90,7 +90,7 @@ void CommerceDataModule::PullHistoryBuys()
   }
 }
 
-unsigned int CommerceDataModule::GetSellPrice(unsigned int id)
+int CommerceDataModule::GetSellPrice(unsigned int id)
 {
   auto it = CurrentPrices.find(id);
   if (it != CurrentPrices.end())

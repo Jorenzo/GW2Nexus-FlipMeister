@@ -8,5 +8,5 @@ class CurrencyDisplay
 {
 public:
   static void SetupResources(EntryData* Entry);
-  static void Render(EntryData* Entry, unsigned int value);
+  static void Render(EntryData* Entry, int value);
 };

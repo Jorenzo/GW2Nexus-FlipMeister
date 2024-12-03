@@ -4,7 +4,7 @@ struct TrackedItem
 {
   unsigned int ItemID = 0;
   unsigned int Quantity = 0;
-  unsigned int BuyPrice = 0;
+  int BuyPrice = 0;
 
   bool operator==(const TrackedItem& other) const {
     return ItemID == other.ItemID && Quantity == other.Quantity && BuyPrice == other.BuyPrice;

@@ -3,7 +3,7 @@
 struct TransactionData
 {
   unsigned int ItemID = 0;
-  unsigned int Price = 0;
+  int Price = 0;
   unsigned int Quantity = 0;
 };
 inline void to_json(nlohmann::json& j, const TransactionData& transaction) {
@@ -21,7 +21,7 @@ inline void from_json(const nlohmann::json& j, TransactionData& transaction) {
 
 struct PriceObject
 {
-  unsigned int UnitPrice = 0;
+  int UnitPrice = 0;
 };
 inline void to_json(nlohmann::json& j, const PriceObject& price) {
   j = nlohmann::json{
@@ -55,7 +55,7 @@ public:
   void                                    Update();
   const std::vector<TransactionData>*     GetCurrentBuys() const { return &CurrentBuys; };
   const std::vector<TransactionData>*     GetHistoryBuys() const { return &HistoryBuys; };
-  unsigned int                            GetSellPrice(unsigned int id);
+  int                                     GetSellPrice(unsigned int id);
 private:
   void                                    PullCurrentBuys();
   void                                    PullHistoryBuys();
