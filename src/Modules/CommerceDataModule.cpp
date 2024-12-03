@@ -12,7 +12,7 @@ void CommerceDataModule::Update()
 {
   unsigned int tick = Entry->MumbleLink->UITick;
   const unsigned int TransactionsTickTreshHold = 5000;
-  const unsigned int PricesTickTreshHold = 500;
+  const unsigned int PricesTickTreshHold = 2000;
   if (tick % TransactionsTickTreshHold == 0 && tick != 0)
   {
     //Log(Entry, DEBUG, "Syncing Transactions");

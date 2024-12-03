@@ -42,8 +42,14 @@ void NewTrackerItemUI::Render()
         unsigned long parsed_value = std::strtoul(QuantityBuffer, &endptr, 10);
         if (endptr != QuantityBuffer && *endptr == '\0' && parsed_value <= UINT32_MAX)
         {
-          Item.Quantity = static_cast<unsigned int>(parsed_value);
-          QuantityError = false;
+          unsigned int value = static_cast<unsigned int>(parsed_value);
+          if (value > 0)
+          {
+            Item.Quantity = value;
+            QuantityError = false;
+          }
+          else
+            QuantityError = true;
         }
         else
         {
@@ -61,11 +67,17 @@ void NewTrackerItemUI::Render()
       if (ImGui::InputText("Buy Price", BuyPriceBuffer, IM_ARRAYSIZE(BuyPriceBuffer), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank))
       {
         char *endptr = nullptr;
-        unsigned long parsed_value = std::strtoul(BuyPriceBuffer, &endptr, 10);
+        long parsed_value = std::strtol(BuyPriceBuffer, &endptr, 10);
         if (endptr != BuyPriceBuffer && *endptr == '\0' && parsed_value <= UINT32_MAX)
         {
-          Item.BuyPrice = static_cast<unsigned int>(parsed_value);
-          BuyPriceError = false;
+          int value = static_cast<int>(parsed_value);
+          if (value > 0)
+          {
+            Item.BuyPrice = value;
+            BuyPriceError = false;
+          }
+          else
+            BuyPriceError = true;
         }
         else
         {
