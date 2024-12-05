@@ -14,7 +14,7 @@ void TrackerUI::Render()
   ImGui::SameLine();
   if (ImGui::Button("Open Completed Tracked Items", ImVec2(250, 30)))
   {
-    Entry->UI.TradingPost->Open();
+    Entry->UI.CompletedTracker->Open();
   }
   ImGui::Separator();
   if (ImGui::Button("Add Item Manually", ImVec2(150, 20)))
