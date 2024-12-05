@@ -5,8 +5,8 @@ class TrackerUI
 public:
   TrackerUI(EntryData* entry);
 
-  void Render();
+  void                    Render();
 private:
-  EntryData* Entry;
-  int removedIndex = -1;
+  EntryData*              Entry = nullptr;
+  int                     RemovedIndex = -1;
 };

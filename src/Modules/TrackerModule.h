@@ -6,15 +6,17 @@ struct TrackedItem
   unsigned int Quantity = 0;
   int BuyPrice = 0;
 
-  bool operator==(const TrackedItem& other) const {
+  bool operator==(const TrackedItem& other) const 
+  {
     return ItemID == other.ItemID && Quantity == other.Quantity && BuyPrice == other.BuyPrice;
   }
 };
 inline void to_json(nlohmann::json& j, const TrackedItem& item) {
-  j = nlohmann::json{
-  { "item_id", item.ItemID },
-  { "quantity", item.Quantity },
-  { "buy_price", item.BuyPrice },
+  j = nlohmann::json
+  {
+    { "item_id", item.ItemID },
+    { "quantity", item.Quantity },
+    { "buy_price", item.BuyPrice },
   };
 }
 inline void from_json(const nlohmann::json& j, TrackedItem& item) {

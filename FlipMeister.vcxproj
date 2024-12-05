@@ -146,6 +146,7 @@
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="src\Modules\CompletedTrackerModule.cpp" />
     <ClCompile Include="src\Modules\ItemDataModule.cpp" />
     <ClCompile Include="src\Modules\CommerceDataModule.cpp" />
     <ClCompile Include="src\Entry.cpp" />
@@ -176,6 +177,8 @@
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">pch.h</PrecompiledHeaderFile>
       <PrecompiledHeaderFile Condition="'$(Configuration)|$(Platform)'=='Release|x64'">pch.h</PrecompiledHeaderFile>
     </ClCompile>
+    <ClCompile Include="src\UI\CompletedTrackerUI.cpp" />
+    <ClCompile Include="src\UI\CompleteTrackedItemUI.cpp" />
     <ClCompile Include="src\UI\CurrencyDisplay.cpp" />
     <ClCompile Include="src\UI\NewTrackerItemUI.cpp" />
     <ClCompile Include="src\UI\TrackerUI.cpp" />
@@ -185,6 +188,7 @@
     <ClCompile Include="src\Util\GW2API.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="src\Modules\CompletedTrackerModule.h" />
     <ClInclude Include="src\Modules\ItemDataModule.h" />
     <ClInclude Include="src\Modules\CommerceDataModule.h" />
     <ClInclude Include="src\EntryData.h" />
@@ -198,6 +202,8 @@
     <ClInclude Include="src\mumble\Mumble.h" />
     <ClInclude Include="src\nexus\Nexus.h" />
     <ClInclude Include="src\pch.h" />
+    <ClInclude Include="src\UI\CompletedTrackerUI.h" />
+    <ClInclude Include="src\UI\CompleteTrackedItemUI.h" />
     <ClInclude Include="src\UI\CurrencyDisplay.h" />
     <ClInclude Include="src\UI\NewTrackerItemUI.h" />
     <ClInclude Include="src\UI\TrackerUI.h" />

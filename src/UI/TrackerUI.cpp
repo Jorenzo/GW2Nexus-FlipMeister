@@ -12,7 +12,12 @@ void TrackerUI::Render()
     Entry->UI.TradingPost->Open();
   }
   ImGui::SameLine();
-  if (ImGui::Button("Add Item Manually", ImVec2(250, 30)))
+  if (ImGui::Button("Open Completed Tracked Items", ImVec2(250, 30)))
+  {
+    Entry->UI.TradingPost->Open();
+  }
+  ImGui::Separator();
+  if (ImGui::Button("Add Item Manually", ImVec2(150, 20)))
   {
     Entry->UI.NewTrackerItem->Show();
   }
@@ -91,17 +96,17 @@ void TrackerUI::Render()
         ImGui::PopID();
         ImGui::TableNextColumn();
         ImGui::PushID(i);
-        if (removedIndex != i && ImGui::Button("X"))
-          removedIndex = i;
-        if (removedIndex == i)
+        if (RemovedIndex != i && ImGui::Button("X"))
+          RemovedIndex = i;
+        if (RemovedIndex == i)
         {
           if (ImGui::Button("N"))
-            removedIndex = -1;
+            RemovedIndex = -1;
           ImGui::SameLine();
           if (ImGui::Button("Y"))
           {
             ItemToRemove = i;
-            removedIndex = -1;
+            RemovedIndex = -1;
           }
         }
         ImGui::PopID();

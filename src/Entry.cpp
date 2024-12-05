@@ -74,6 +74,7 @@ void AddonLoad(AddonAPI* aApi)
 
   ModuleData Modules;
   Modules.Tracker = new TrackerModule(&Entry);
+  Modules.CompletedTracker = new CompletedTrackerModule(&Entry);
   Modules.ItemData = new ItemDataModule(&Entry);
   Modules.CommerceData = new CommerceDataModule(&Entry);
 
@@ -83,8 +84,10 @@ void AddonLoad(AddonAPI* aApi)
 
   UIData UI;
   UI.Tracker = new TrackerUI(&Entry);
+  UI.CompletedTracker = new CompletedTrackerUI(&Entry);
   UI.TradingPost = new TradingPostUI(&Entry);
   UI.NewTrackerItem = new NewTrackerItemUI(&Entry);
+  UI.CompleteTrackedItem = new CompleteTrackedItemUI(&Entry);
 
   Entry.UI = UI;
 
@@ -117,12 +120,15 @@ void AddonRender()
       //ImGui::Text("%s", nullptr != Entry.NexusLink ? Entry.NexusLink->IsMoving ? "Currently moving!" : "Currently standing still." : "We don't know whether we are standing or moving? NexusLink seems to be empty." );
 
       Entry.UI.Tracker->Render();
+      
+      ImGui::End();
     }
-    ImGui::End();
   }
 
+  Entry.UI.CompletedTracker->Render();
   Entry.UI.TradingPost->Render();
   Entry.UI.NewTrackerItem->Render();
+  Entry.UI.CompleteTrackedItem->Render();
 }
 
 ///----------------------------------------------------------------------------------------------------

@@ -7,7 +7,8 @@ struct TransactionData
   unsigned int Quantity = 0;
 };
 inline void to_json(nlohmann::json& j, const TransactionData& transaction) {
-  j = nlohmann::json{
+  j = nlohmann::json
+  {
     { "item_id", transaction.ItemID },
     { "price", transaction.Price },
     { "quantity", transaction.Quantity },
@@ -24,7 +25,8 @@ struct PriceObject
   int UnitPrice = 0;
 };
 inline void to_json(nlohmann::json& j, const PriceObject& price) {
-  j = nlohmann::json{
+  j = nlohmann::json
+  {
     { "unit_price", price.UnitPrice },
   };
 }
@@ -38,7 +40,8 @@ struct PriceData
   PriceObject Sells = {};
 };
 inline void to_json(nlohmann::json& j, const PriceData& price) {
-  j = nlohmann::json {
+  j = nlohmann::json 
+  {
     { "id", price.ItemID },
     { "sells", price.Sells },
   };

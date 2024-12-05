@@ -8,6 +8,7 @@
 struct ModuleData
 {
   class TrackerModule* Tracker = nullptr;
+  class CompletedTrackerModule* CompletedTracker = nullptr;
   class ItemDataModule* ItemData = nullptr;
   class CommerceDataModule* CommerceData = nullptr;
 };
@@ -16,7 +17,9 @@ struct UIData
 {
   class TradingPostUI* TradingPost = nullptr;
   class TrackerUI* Tracker = nullptr;
+  class CompletedTrackerUI* CompletedTracker = nullptr;
   class NewTrackerItemUI* NewTrackerItem = nullptr;
+  class CompleteTrackedItemUI* CompleteTrackedItem = nullptr;
 };
 
 struct EntryData

@@ -1,24 +1,26 @@
 #pragma once
 
-class NewTrackerItemUI
+class CompleteTrackedItemUI
 {
 public:
-  NewTrackerItemUI(EntryData* entry);
+  CompleteTrackedItemUI(EntryData* entry);
 
   void Render();
   void Show();
-  void Show(const TrackedItem& item);
-  void ShowEdit(const TrackedItem& item, int index);
+  void Show(const CompletedItem& item);
+  void ShowEdit(const CompletedItem& item, int index);
 private:
   void Init();
   bool Visible = false;
   char ItemIDBuffer[128] = "";
   char QuantityBuffer[128] = "";
   char BuyPriceBuffer[128] = "";
+  char SellPriceBuffer[128] = "";
   bool ItemIDError = false;
   bool QuantityError = false;
   bool BuyPriceError = false;
-  TrackedItem Item;
+  bool SellPriceError = false;
+  CompletedItem Item;
   EntryData* Entry = nullptr;
   bool EditMode = false;
   int EditIndex = -1;
