@@ -22,7 +22,7 @@ void TrackerUI::Render()
     Entry->UI.NewTrackerItem->Show();
   }
 
-  if (ImGui::BeginTable("Tracked Items", 12, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+  if (ImGui::BeginTable("Tracked Items", 13, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
   {
     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
     ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
@@ -35,10 +35,15 @@ void TrackerUI::Render()
     ImGui::TableSetupColumn("RoI%", ImGuiTableColumnFlags_WidthFixed, 50);
     ImGui::TableSetupColumn("Profit", ImGuiTableColumnFlags_WidthFixed, 160);
     ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_WidthFixed, 30);
+    ImGui::TableSetupColumn("Resolve", ImGuiTableColumnFlags_WidthFixed, 60);
     ImGui::TableSetupColumn("Del", ImGuiTableColumnFlags_WidthFixed, 45);
     ImGui::TableHeadersRow();
 
     int ItemToRemove = -1;
+
+    int AllTotalBuyPrice = 0;
+    int AllAfterTax = 0;
+    int AllProfit = 0;
     for (int i = 0; i < Entry->Modules.Tracker->GetTrackedItems()->size(); ++i)
     {
       const TrackedItem& item = Entry->Modules.Tracker->GetTrackedItems()->at(i);
@@ -60,6 +65,7 @@ void TrackerUI::Render()
         CurrencyDisplay::Render(Entry, item.BuyPrice);
         ImGui::TableNextColumn();
         int TotalBuyPrice = item.BuyPrice * item.Quantity;
+        AllTotalBuyPrice += TotalBuyPrice;
         CurrencyDisplay::Render(Entry, TotalBuyPrice);
         ImGui::TableNextColumn();
         //separator
@@ -68,31 +74,51 @@ void TrackerUI::Render()
         CurrencyDisplay::Render(Entry, SellPrice);
         ImGui::TableNextColumn();
         int AfterTax = (int)((float)SellPrice * 0.85f);
-        CurrencyDisplay::Render(Entry, AfterTax);
+        CurrencyDisplay::Render(Entry, SellPrice != 0 ? AfterTax : 0);
         ImGui::TableNextColumn();
         float TotalAfterTax = (SellPrice * item.Quantity) * 0.85f;
-        CurrencyDisplay::Render(Entry, (int)TotalAfterTax);
+        AllAfterTax += SellPrice != 0 ? (int)TotalAfterTax : 0;
+        CurrencyDisplay::Render(Entry, SellPrice != 0 ? (int)TotalAfterTax : 0);
         ImGui::TableNextColumn();
-        float RoI = (float)AfterTax / item.BuyPrice;
-        RoI -= 1.f; //1.15 to 0.15;
-        RoI *= 100; //make it 15%
-        if(RoI > 15.0f)
-          ImGui::PushStyleColor(ImGuiCol_Text, COL_GREEN);
-        else if(RoI > 5.0f)
-          ImGui::PushStyleColor(ImGuiCol_Text, COL_YELLOW);
-        else if(RoI > 0.0f)
-          ImGui::PushStyleColor(ImGuiCol_Text, COL_ORANGE);
+        if (SellPrice != 0)
+        {
+          float RoI = (float)TotalAfterTax / TotalBuyPrice;
+          RoI -= 1.f; //1.15 to 0.15;
+          RoI *= 100; //make it 15%
+          if (RoI > 15.0f)
+            ImGui::PushStyleColor(ImGuiCol_Text, COL_GREEN);
+          else if (RoI > 5.0f)
+            ImGui::PushStyleColor(ImGuiCol_Text, COL_YELLOW);
+          else if (RoI > 0.0f)
+            ImGui::PushStyleColor(ImGuiCol_Text, COL_ORANGE);
+          else
+            ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
+          ImGui::Text("%.2f%%", RoI);
+          ImGui::PopStyleColor();
+        }
         else
-          ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
-        ImGui::Text("%.2f%%", RoI);
-        ImGui::PopStyleColor();
+          ImGui::Text("0%%");
         ImGui::TableNextColumn();
         int TotalProfit = (int)TotalAfterTax - TotalBuyPrice;
-        CurrencyDisplay::Render(Entry, TotalProfit);
+        if (SellPrice != 0)
+          AllProfit += TotalProfit;
+        CurrencyDisplay::Render(Entry, SellPrice != 0 ? TotalProfit : 0);
         ImGui::TableNextColumn();
         ImGui::PushID(i);
         if (ImGui::Button("Edit"))
           Entry->UI.NewTrackerItem->ShowEdit(item, i);
+        ImGui::PopID();
+        ImGui::TableNextColumn();
+        ImGui::PushID(i);
+        if (ImGui::Button("Resolve"))
+        {
+          CompletedItem comp;
+          comp.ItemID = item.ItemID;
+          comp.Quantity = item.Quantity;
+          comp.BuyPrice = item.BuyPrice;
+          comp.SellPrice = Entry->Modules.CommerceData->GetSellPrice(item.ItemID);
+          Entry->UI.CompleteTrackedItem->Show(comp);
+        }
         ImGui::PopID();
         ImGui::TableNextColumn();
         ImGui::PushID(i);
@@ -119,13 +145,33 @@ void TrackerUI::Render()
     ImGui::TableNextColumn();
     ImGui::TableNextColumn();
     ImGui::TableNextColumn();
-    unsigned int TotalBuyPrice = 0;
-    for (int i = 0; i < Entry->Modules.Tracker->GetTrackedItems()->size(); ++i)
+    CurrencyDisplay::Render(Entry, AllTotalBuyPrice);
+    ImGui::TableNextColumn();
+    ImGui::TableNextColumn();
+    ImGui::TableNextColumn();
+    ImGui::TableNextColumn();
+    CurrencyDisplay::Render(Entry, AllAfterTax);
+    ImGui::TableNextColumn();
+    if (AllAfterTax != 0)
     {
-      const TrackedItem& item = Entry->Modules.Tracker->GetTrackedItems()->at(i);
-      TotalBuyPrice += (item.BuyPrice * item.Quantity);
+      float RoI = (float)AllAfterTax / AllTotalBuyPrice;
+      RoI -= 1.f; //1.15 to 0.15;
+      RoI *= 100; //make it 15%
+      if (RoI > 15.0f)
+        ImGui::PushStyleColor(ImGuiCol_Text, COL_GREEN);
+      else if (RoI > 5.0f)
+        ImGui::PushStyleColor(ImGuiCol_Text, COL_YELLOW);
+      else if (RoI > 0.0f)
+        ImGui::PushStyleColor(ImGuiCol_Text, COL_ORANGE);
+      else
+        ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
+      ImGui::Text("%.2f%%", RoI);
+      ImGui::PopStyleColor();
     }
-    CurrencyDisplay::Render(Entry, TotalBuyPrice);
+    else
+      ImGui::Text("0%%");
+    ImGui::TableNextColumn();
+    CurrencyDisplay::Render(Entry, AllProfit);
     ImGui::EndTable();
 
 
