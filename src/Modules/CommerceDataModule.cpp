@@ -6,23 +6,13 @@ CommerceDataModule::CommerceDataModule(EntryData* entry)
   Entry = entry;
   PullCurrentBuys();
   PullHistoryBuys();
+  PricesTimer.SetNow();
 }
 
 void CommerceDataModule::Update()
 {
-  unsigned int tick = Entry->MumbleLink->UITick;
-  const unsigned int TransactionsTickTreshHold = 5000;
-  const unsigned int PricesTickTreshHold = 2000;
-  if (tick % TransactionsTickTreshHold == 0 && tick != 0)
+  if (PricesTimer.GetSecondsPassed() > 5.0)
   {
-    //Log(Entry, DEBUG, "Syncing Transactions");
-    //PullCurrentBuys();
-    //PullHistoryBuys();
-  }
-
-  if (tick % PricesTickTreshHold == 0 && tick != 0)
-  {
-    Log(Entry, DEBUG, "Sync prices");
     SyncPrices();
   }
 }
@@ -108,6 +98,7 @@ int CommerceDataModule::GetSellPrice(unsigned int id)
 
 void CommerceDataModule::SyncPrices()
 {
+  PricesTimer.SetNow();
   if (PriceWatch.size() > 0)
   {
     std::string ids = "?ids=";

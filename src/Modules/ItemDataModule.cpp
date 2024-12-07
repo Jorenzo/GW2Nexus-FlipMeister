@@ -3,14 +3,14 @@
 ItemDataModule::ItemDataModule(EntryData* entry)
 {
   Entry = entry;
+  UpdateTimer.SetNow();
 }
 
 void ItemDataModule::Update()
 {
-  unsigned int tick = Entry->MumbleLink->UITick;
-  const unsigned int TickTreshHold = 200;
-  if (tick % TickTreshHold == 0 && tick != 0)
+  if (UpdateTimer.GetSecondsPassed() > 2.0f)
   {
+    UpdateTimer.SetNow();
     SyncItems();
   }
 }

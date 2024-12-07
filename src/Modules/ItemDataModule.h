@@ -34,4 +34,5 @@ private:
   std::map<unsigned int, ItemData>        Items;
   std::vector<unsigned int>               QueuedIDs;
   EntryData*                              Entry;
+  Timer                                   UpdateTimer;
 };

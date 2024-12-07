@@ -18,12 +18,12 @@ void TradingPostUI::Render()
     {
       if (ImGui::Button("Refresh Current"))
       {
-        Entry->Modules.CommerceData->GetCurrentBuys();
+        Entry->Modules.CommerceData->PullCurrentBuys();
       }
       ImGui::SameLine();
       if (ImGui::Button("Refresh History"))
       {
-        Entry->Modules.CommerceData->GetHistoryBuys();
+        Entry->Modules.CommerceData->PullHistoryBuys();
       }
 
       if (ImGui::BeginTable("Bought Items", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))

@@ -30,7 +30,7 @@ std::string GW2API::Request(EntryData* Entry, const APIEndPointDefinition& Endpo
 
     payload = HTTPClient::GetRequest(FullRequest);
     int retries = 0;
-    while (payload.empty() && retries < 3)
+    while (payload.empty() && retries < 0) //Turned off retries
     {
       payload = HTTPClient::GetRequest(FullRequest);
       retries++;

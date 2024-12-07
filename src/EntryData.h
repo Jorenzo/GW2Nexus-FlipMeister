@@ -27,7 +27,7 @@ struct EntryData
   HMODULE hSelf = nullptr;
   AddonAPI* APIDefs = nullptr;
   NexusLinkData* NexusLink = nullptr;
-  Mumble::Data* MumbleLink = nullptr;
+  //Mumble::Data* MumbleLink = nullptr;
   Settings* Settings = nullptr;
 
   ModuleData Modules = {};

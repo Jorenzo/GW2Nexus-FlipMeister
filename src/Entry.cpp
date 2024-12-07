@@ -69,7 +69,7 @@ void AddonLoad(AddonAPI* aApi)
   ImGui::SetAllocatorFunctions((void* (*)(size_t, void*))Entry.APIDefs->ImguiMalloc, (void(*)(void*, void*))Entry.APIDefs->ImguiFree);
 
   Entry.NexusLink = (NexusLinkData*)Entry.APIDefs->GetResource("DL_NEXUS_LINK");
-  Entry.MumbleLink = (Mumble::Data*)Entry.APIDefs->GetResource("DL_MUMBLE_LINK");
+  //Entry.MumbleLink = (Mumble::Data*)Entry.APIDefs->GetResource("DL_MUMBLE_LINK");
 
   Entry.Settings = new Settings(&Entry);
   Entry.Settings->Init();

@@ -59,13 +59,14 @@ public:
   const std::vector<TransactionData>*     GetCurrentBuys() const { return &CurrentBuys; };
   const std::vector<TransactionData>*     GetHistoryBuys() const { return &HistoryBuys; };
   int                                     GetSellPrice(unsigned int id);
-private:
   void                                    PullCurrentBuys();
   void                                    PullHistoryBuys();
+private:
   void                                    SyncPrices();
   std::vector<TransactionData>            CurrentBuys;
   std::vector<TransactionData>            HistoryBuys;
   std::map<unsigned int, PriceData>       CurrentPrices;
   std::vector<unsigned int>               PriceWatch;
   EntryData*                              Entry = nullptr;
+  Timer                                   PricesTimer;
 };
