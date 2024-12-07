@@ -130,7 +130,9 @@ void CompletedTrackerUI::Render()
         ImGui::TableNextColumn();
         CurrencyDisplay::Render(Entry, AllAfterTax);
         ImGui::TableNextColumn();
-        float RoI = (float)AllAfterTax / AllTotalBuyPrice;
+        float RoI = 1.0f;
+        if(AllTotalBuyPrice != 0)
+         RoI = (float)AllAfterTax / AllTotalBuyPrice;
         RoI -= 1.f; //1.15 to 0.15;
         RoI *= 100; //make it 15%
         if (RoI > 15.0f)

@@ -188,6 +188,7 @@
     <ClCompile Include="src\Util\GW2API.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="assets\resource.h" />
     <ClInclude Include="src\Modules\CompletedTrackerModule.h" />
     <ClInclude Include="src\Modules\ItemDataModule.h" />
     <ClInclude Include="src\Modules\CommerceDataModule.h" />
@@ -214,6 +215,15 @@
     <ClInclude Include="src\Util\GW2API.h" />
     <ClInclude Include="src\Util\HTTPClient.h" />
     <ClInclude Include="src\Util\json.hpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="assets\FlipMeisterLogo.png" />
+    <Image Include="assets\FlipMeisterQuickAccess.png" />
+    <Image Include="assets\FlipMeisterQuickAccessHover.png" />
+    <Image Include="FlipMeisterQuickAccessHover.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="assets\Assets.rc" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

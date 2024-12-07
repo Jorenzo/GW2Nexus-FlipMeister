@@ -2,6 +2,12 @@
 
 #include "pch.h"
 
+#define LOGO "FLIPMEISTER_LOGO"
+#define QUICKACCESS "FLIPMEISTER_QUICKACCESS"
+#define QUICKACCESS_HOVER "FLIPMEISTER_QUICKACCESS_HOVER"
+
+#define ADDON_SHORTCUT "FLIPMEISTER_SHORTCUT"
+
 void AddonLoad(AddonAPI* aApi);
 void AddonUnload();
 void AddonRender();
@@ -10,6 +16,7 @@ void AddonOptions();
 EntryData Entry;
 AddonDefinition AddonDef;
 bool Visible = false;
+
 
 BOOL APIENTRY DllMain(HMODULE hModule, DWORD  ul_reason_for_call, LPVOID lpReserved)
 {
@@ -72,6 +79,13 @@ void AddonLoad(AddonAPI* aApi)
 
   Entry.APIDefs->RegisterKeybindWithString(ADDON_VISIBILITY_KEYBIND, ProcessKeybind, "ALT+F");
 
+  Entry.APIDefs->LoadTextureFromResource(LOGO, FM_Logo, Entry.hSelf, nullptr);
+  Entry.APIDefs->LoadTextureFromResource(QUICKACCESS, FM_QuickAccess, Entry.hSelf, nullptr);
+  Entry.APIDefs->LoadTextureFromResource(QUICKACCESS_HOVER, FM_QuickAccessHover, Entry.hSelf, nullptr);
+  CurrencyDisplay::SetupResources(&Entry);
+
+  Entry.APIDefs->AddShortcut(ADDON_SHORTCUT, QUICKACCESS, QUICKACCESS_HOVER, ADDON_VISIBILITY_KEYBIND, "");
+
   ModuleData Modules;
   Modules.Tracker = new TrackerModule(&Entry);
   Modules.CompletedTracker = new CompletedTrackerModule(&Entry);
@@ -80,7 +94,7 @@ void AddonLoad(AddonAPI* aApi)
 
   Entry.Modules = Modules;
 
-  CurrencyDisplay::SetupResources(&Entry);
+
 
   UIData UI;
   UI.Tracker = new TrackerUI(&Entry);
@@ -96,6 +110,8 @@ void AddonLoad(AddonAPI* aApi)
 
 void AddonUnload()
 {
+  Entry.APIDefs->RemoveShortcut(ADDON_SHORTCUT);
+
   Entry.APIDefs->DeregisterKeybind(ADDON_VISIBILITY_KEYBIND);
 
   Entry.APIDefs->DeregisterRender(AddonRender);
@@ -115,6 +131,19 @@ void AddonRender()
   {
     if (ImGui::Begin(ADDON_NAME, &Visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
     {
+      Texture* LogoTexture = Entry.APIDefs->GetTexture(LOGO);
+      if (LogoTexture)
+      {
+        float scale = 0.35f;
+        ImVec2 imageSize = ImVec2(((float)LogoTexture->Width) * scale, ((float)LogoTexture->Height) * scale);
+        float contentRegionWidth = ImGui::GetContentRegionAvail().x;
+        float xPos = (contentRegionWidth - imageSize.x) * 0.5f;
+        ImGui::SetCursorPosX(xPos);
+        ImGui::Image((ImTextureID)LogoTexture->Resource, imageSize);
+      }
+
+      ImGui::Separator();
+
       //ImGui::Text("UI Tick: %u", nullptr != Entry.MumbleLink ? Entry.MumbleLink->UITick : 0 );
 
       //ImGui::Text("%s", nullptr != Entry.NexusLink ? Entry.NexusLink->IsMoving ? "Currently moving!" : "Currently standing still." : "We don't know whether we are standing or moving? NexusLink seems to be empty." );

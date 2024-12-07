@@ -9,6 +9,8 @@
 #include <urlmon.h>
 #include <sstream>
 
+#include "../assets/resource.h"
+
 #include "nexus/Nexus.h"
 #include "mumble/Mumble.h"
 #include "imgui/imgui.h"
