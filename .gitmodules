@@ -7,3 +7,6 @@
 [submodule "src/mumble"]
 	path = src/mumble
 	url = https://github.com/RaidcoreGG/RCGG-lib-mumble-api
+[submodule "src/libcurl"]
+	path = src/libcurl
+	url = https://github.com/curl/curl.git
