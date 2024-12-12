@@ -3,7 +3,7 @@
 class CompleteTrackedItemUI
 {
 public:
-  CompleteTrackedItemUI(EntryData* entry);
+  CompleteTrackedItemUI(Addon* addon);
 
   void Render();
   void Show();
@@ -21,7 +21,7 @@ private:
   bool BuyPriceError = false;
   bool SellPriceError = false;
   CompletedItem Item;
-  EntryData* Entry = nullptr;
+  Addon* FAddon = nullptr;
   bool EditMode = false;
   int EditIndex = -1;
 };

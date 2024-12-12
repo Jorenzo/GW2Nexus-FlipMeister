@@ -26,7 +26,7 @@ inline void from_json(const nlohmann::json& j, ItemData& item) {
 class ItemDataModule
 {
 public:
-  ItemDataModule(EntryData* entry);
+  ItemDataModule(Addon* addon);
   bool                                    RequestItemData(unsigned int id, ItemData& item);
   void                                    Update();
 private:
@@ -35,7 +35,7 @@ private:
   std::map<unsigned int, ItemData>        Items;
   std::vector<unsigned int>               QueuedIDs;
   std::vector<unsigned int>               ProcessedIDs;
-  EntryData*                              Entry;
+  Addon*                                  FAddon;
   Timer                                   UpdateTimer;
   HTTPRequestHandle                       SyncItemsRequestHandle = HTTPREQUEST_HANDLE_INVALID;
 };

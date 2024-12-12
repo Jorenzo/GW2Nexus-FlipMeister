@@ -3,10 +3,10 @@
 class TradingPostUI
 {
 public:
-  TradingPostUI(EntryData* entry);
+  TradingPostUI(Addon* addon);
   void                        Open();
   void                        Render();
 private:
-  EntryData*                  Entry = nullptr;
+  Addon*                      FAddon = nullptr;
   bool                        Visible = false;
 };

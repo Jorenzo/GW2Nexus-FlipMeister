@@ -1,8 +1,8 @@
 #include "pch.h"
 
-ItemDataModule::ItemDataModule(EntryData* entry)
+ItemDataModule::ItemDataModule(Addon* addon)
 {
-  Entry = entry;
+  FAddon = addon;
   UpdateTimer.SetNow();
 }
 
@@ -38,7 +38,7 @@ bool ItemDataModule::RequestItemData(unsigned int id, ItemData& data)
 void ItemDataModule::TrySyncItems()
 {
   std::string payload = "";
-  if (GW2API::GetPayload(Entry, SyncItemsRequestHandle, payload))
+  if (GW2API::GetPayload(FAddon, SyncItemsRequestHandle, payload))
   {
     if (!payload.empty())
     {
@@ -50,13 +50,13 @@ void ItemDataModule::TrySyncItems()
 
         //request a texture
         std::pair<std::string, std::string> splitURL = HTTPClient::SplitRemoteFromEndpoint(item.IconUrl);
-        Entry->APIDefs->LoadTextureFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
+        FAddon->GetAPI()->LoadTextureFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
 
         ProcessedIDs.clear();
       }
     }
     else
-      Log(Entry, ELogLevel_WARNING, "Found empty ItemData payload");
+      FAddon->Log(WARNING, "Found empty ItemData payload");
 
     SyncItemsRequestHandle = HTTPREQUEST_HANDLE_INVALID;
   }
@@ -78,7 +78,7 @@ void ItemDataModule::RequestSyncItems()
       ids += std::to_string(QueuedIDs[i]);
     }
 
-    SyncItemsRequestHandle = GW2API::Request(Entry, API_ITEMS, ids);
+    SyncItemsRequestHandle = GW2API::Request(FAddon, API_ITEMS, ids);
 
     ProcessedIDs = QueuedIDs;
     QueuedIDs.clear();

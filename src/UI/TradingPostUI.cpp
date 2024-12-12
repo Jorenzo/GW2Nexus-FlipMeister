@@ -1,8 +1,8 @@
 #include "pch.h"
 
-TradingPostUI::TradingPostUI(EntryData* entry)
+TradingPostUI::TradingPostUI(Addon* addon)
 {
-  Entry = entry;
+  FAddon = addon;
 }
 
 void TradingPostUI::Open()
@@ -18,12 +18,12 @@ void TradingPostUI::Render()
     {
       if (ImGui::Button("Refresh Current"))
       {
-        Entry->Modules.CommerceData->PullCurrentBuys();
+        FAddon->GetModules()->CommerceData->PullCurrentBuys();
       }
       ImGui::SameLine();
       if (ImGui::Button("Refresh History"))
       {
-        Entry->Modules.CommerceData->PullHistoryBuys();
+        FAddon->GetModules()->CommerceData->PullHistoryBuys();
       }
 
       if (ImGui::BeginTable("Bought Items", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
@@ -39,15 +39,15 @@ void TradingPostUI::Render()
         ImGui::Text("Current Open Buy Orders");
         ImGui::TableSetColumnIndex(4);
         unsigned int counter = 0;
-        for (const TransactionData& item : *Entry->Modules.CommerceData->GetCurrentBuys())
+        for (const TransactionData& item : *FAddon->GetModules()->CommerceData->GetCurrentBuys())
         {
           counter++;
           ItemData Data;
-          if (Entry->Modules.ItemData->RequestItemData(item.ItemID, Data))
+          if (FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
           {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            if (Texture* tex = Entry->APIDefs->GetTexture(Data.TextureID.c_str()))
+            if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
             {
               ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
               ImGui::SameLine();
@@ -56,9 +56,9 @@ void TradingPostUI::Render()
             ImGui::TableNextColumn();
             ImGui::Text("%i", item.Quantity);
             ImGui::TableNextColumn();
-            CurrencyDisplay::Render(Entry, item.Price);
+            CurrencyDisplay::Render(FAddon, item.Price);
             ImGui::TableNextColumn();
-            CurrencyDisplay::Render(Entry, item.Price * item.Quantity);
+            CurrencyDisplay::Render(FAddon, item.Price * item.Quantity);
             ImGui::TableNextColumn();
             ImGui::PushID(counter);
             if (ImGui::Button("Track"))
@@ -67,7 +67,7 @@ void TradingPostUI::Render()
               trackedItem.ItemID = item.ItemID;
               trackedItem.BuyPrice = item.Price;
               trackedItem.Quantity = item.Quantity;
-              Entry->UI.NewTrackerItem->Show(trackedItem);
+              FAddon->GetUI()->NewTrackerItem->Show(trackedItem);
             }
             ImGui::PopID();
           }
@@ -76,15 +76,15 @@ void TradingPostUI::Render()
         ImGui::TableNextColumn();
         ImGui::Text("Buy History");
         ImGui::TableSetColumnIndex(4);
-        for (const TransactionData& item : *Entry->Modules.CommerceData->GetHistoryBuys())
+        for (const TransactionData& item : *FAddon->GetModules()->CommerceData->GetHistoryBuys())
         {
           counter++;
           ItemData Data;
-          if (Entry->Modules.ItemData->RequestItemData(item.ItemID, Data))
+          if (FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
           {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            if (Texture* tex = Entry->APIDefs->GetTexture(Data.TextureID.c_str()))
+            if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
             {
               ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
               ImGui::SameLine();
@@ -93,9 +93,9 @@ void TradingPostUI::Render()
             ImGui::TableNextColumn();
             ImGui::Text("%i", item.Quantity);
             ImGui::TableNextColumn();
-            CurrencyDisplay::Render(Entry, item.Price);
+            CurrencyDisplay::Render(FAddon, item.Price);
             ImGui::TableNextColumn();
-            CurrencyDisplay::Render(Entry, item.Price * item.Quantity);
+            CurrencyDisplay::Render(FAddon, item.Price * item.Quantity);
             ImGui::TableNextColumn();
             ImGui::PushID(counter);
             if (ImGui::Button("Track"))
@@ -104,7 +104,7 @@ void TradingPostUI::Render()
               trackedItem.ItemID = item.ItemID;
               trackedItem.BuyPrice = item.Price;
               trackedItem.Quantity = item.Quantity;
-              Entry->UI.NewTrackerItem->Show(trackedItem);
+              FAddon->GetUI()->NewTrackerItem->Show(trackedItem);
             }
             ImGui::PopID();
           }

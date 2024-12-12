@@ -3,10 +3,10 @@
 class TrackerUI
 {
 public:
-  TrackerUI(EntryData* entry);
+  TrackerUI(Addon* addon);
 
   void                    Render();
 private:
-  EntryData*              Entry = nullptr;
+  Addon *                 FAddon = nullptr;
   int                     RemovedIndex = -1;
 };

@@ -18,7 +18,7 @@ struct APIEndPointDefinition
 class GW2API
 {
 public:
-  static HTTPRequestHandle Request(EntryData* Entry, const APIEndPointDefinition& Endpoint, const std::string& ExtraData = "");
-  static bool GetPayload(EntryData* Entry, HTTPRequestHandle handle, std::string& outData);
+  static HTTPRequestHandle Request(Addon* addon, const APIEndPointDefinition& Endpoint, const std::string& ExtraData = "");
+  static bool GetPayload(Addon* addon, HTTPRequestHandle handle, std::string& outData);
 private:
 };

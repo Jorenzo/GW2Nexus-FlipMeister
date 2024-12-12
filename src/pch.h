@@ -4,6 +4,7 @@
 #include <vector>
 #include <map>
 #include <string>
+#include <cstring>
 #include <fstream>
 #include <filesystem>
 #include <sstream>
@@ -15,7 +16,6 @@
 #include "nexus/Nexus.h"
 //#include "mumble/Mumble.h"
 #include "imgui/imgui.h"
-#include "util/Log.h"
 
 #include "util/json.hpp"
 #include "util/HTTPClient.h"
@@ -24,7 +24,7 @@
 #include "util/Colors.h"
 #include "Util/Timer.h"
 
-#include "EntryData.h"
+#include "Addon.h"
 
 #include "Modules/ItemDataModule.h"
 #include "Modules/CommerceDataModule.h"

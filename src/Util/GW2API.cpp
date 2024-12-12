@@ -1,6 +1,6 @@
 #include "pch.h"
 
-HTTPRequestHandle GW2API::Request(EntryData* Entry, const APIEndPointDefinition& Endpoint, const std::string& ExtraData)
+HTTPRequestHandle GW2API::Request(Addon* addon, const APIEndPointDefinition& Endpoint, const std::string& ExtraData)
 {
   std::string payload = "";
   try
@@ -8,19 +8,19 @@ HTTPRequestHandle GW2API::Request(EntryData* Entry, const APIEndPointDefinition&
     std::string FullRequest = GW2_API + Endpoint.EndPoint;
     if (Endpoint.NeedsAccess)
     {
-      if (Entry && Entry->Settings)
+      if (addon && addon->GetSettings())
       {
-        if (!Entry->Settings->GetAPIKey().empty())
+        if (!addon->GetSettings()->GetAPIKey().empty())
         {
           FullRequest += "?access_token=";
-          FullRequest += Entry->Settings->GetAPIKey();
+          FullRequest += addon->GetSettings()->GetAPIKey();
         }
         else
-          Log(Entry, CRITICAL, "Trying to reach endpoint '%s' with API Key, but API Key is empty", FullRequest.c_str());
+          addon->Log(CRITICAL, "Trying to reach endpoint '%s' with API Key, but API Key is empty", FullRequest.c_str());
       }
       else
       {
-        Log(Entry, CRITICAL, "Trying to reach endpoint '%s' but Entry or Settings are nullptr", FullRequest.c_str());
+        addon->Log(CRITICAL, "Trying to reach endpoint '%s' but Entry or Settings are nullptr", FullRequest.c_str());
       }
     }
     if (ExtraData != "")
@@ -28,22 +28,22 @@ HTTPRequestHandle GW2API::Request(EntryData* Entry, const APIEndPointDefinition&
       FullRequest += ExtraData;
     }
 
-    return Entry->HTTPClient->QueueRequest(FullRequest);
+    return addon->GetHTTPClient()->QueueRequest(FullRequest);
   }
   catch (const std::exception& e)
   {
-    Log(Entry, CRITICAL, "Unknown exception performing HTTP call: \n%s", e.what());
+    addon->Log(CRITICAL, "Unknown exception performing HTTP call: \n%s", e.what());
   }
 
   return HTTPREQUEST_HANDLE_INVALID;
 }
 
-bool GW2API::GetPayload(EntryData* Entry, HTTPRequestHandle handle, std::string& outData)
+bool GW2API::GetPayload(Addon* addon, HTTPRequestHandle handle, std::string& outData)
 {
-  if (!Entry->HTTPClient->IsRequestDone(handle))
+  if (!addon->GetHTTPClient()->IsRequestDone(handle))
     return false;
 
-  outData = Entry->HTTPClient->GetResponse(handle);
-  Entry->HTTPClient->CleanupRequest(handle);
+  outData = addon->GetHTTPClient()->GetResponse(handle);
+  addon->GetHTTPClient()->CleanupRequest(handle);
   return true;
 }

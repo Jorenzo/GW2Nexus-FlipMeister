@@ -28,7 +28,7 @@ inline void from_json(const nlohmann::json& j, TrackedItem& item) {
 class TrackerModule
 {
 public:
-  TrackerModule(EntryData* entry);
+  TrackerModule(Addon* addon);
   const std::vector<TrackedItem>* GetTrackedItems() const { return &TrackedItems; }
   void TrackItem(const TrackedItem& item);
   void EditItem(int index, const TrackedItem& item);
@@ -36,6 +36,6 @@ public:
 private:
   void ReadFromFile();
   void WriteToFile();
-  EntryData*                Entry;
+  Addon*                    FAddon;
   std::vector<TrackedItem>  TrackedItems;
 };

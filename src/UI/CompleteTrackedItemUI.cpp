@@ -1,8 +1,8 @@
 #include "pch.h"
 
-CompleteTrackedItemUI::CompleteTrackedItemUI(EntryData* entry)
+CompleteTrackedItemUI::CompleteTrackedItemUI(Addon* addon)
 {
-  Entry = entry;
+  FAddon = addon;
 }
 
 void CompleteTrackedItemUI::Render()
@@ -135,9 +135,9 @@ void CompleteTrackedItemUI::Render()
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         ItemData Data;
-        if (Item.ItemID != 0 && Entry->Modules.ItemData->RequestItemData(Item.ItemID, Data))
+        if (Item.ItemID != 0 && FAddon->GetModules()->ItemData->RequestItemData(Item.ItemID, Data))
         {
-          if (Texture* tex = Entry->APIDefs->GetTexture(Data.TextureID.c_str()))
+          if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
           {
             ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
             ImGui::SameLine();
@@ -146,13 +146,13 @@ void CompleteTrackedItemUI::Render()
           ImGui::TableNextColumn();
           ImGui::Text("%i", Item.Quantity);
           ImGui::TableNextColumn();
-          CurrencyDisplay::Render(Entry, Item.BuyPrice);
+          CurrencyDisplay::Render(FAddon, Item.BuyPrice);
           ImGui::TableNextColumn();
-          CurrencyDisplay::Render(Entry, Item.BuyPrice * Item.Quantity);
+          CurrencyDisplay::Render(FAddon, Item.BuyPrice * Item.Quantity);
           ImGui::TableNextColumn();
-          CurrencyDisplay::Render(Entry, Item.SellPrice);
+          CurrencyDisplay::Render(FAddon, Item.SellPrice);
           ImGui::TableNextColumn();
-          CurrencyDisplay::Render(Entry, Item.SellPrice * Item.Quantity);
+          CurrencyDisplay::Render(FAddon, Item.SellPrice * Item.Quantity);
         }
         ImGui::EndTable();
       }
@@ -165,9 +165,9 @@ void CompleteTrackedItemUI::Render()
       if (ImGui::Button("Confirm"))
       {
         if (!EditMode)
-          Entry->Modules.CompletedTracker->AddCompletedItem(Item);
+          FAddon->GetModules()->CompletedTracker->AddCompletedItem(Item);
         else
-          Entry->Modules.CompletedTracker->EditItem(EditIndex, Item);
+          FAddon->GetModules()->CompletedTracker->EditItem(EditIndex, Item);
         Visible = false;
       }
     }

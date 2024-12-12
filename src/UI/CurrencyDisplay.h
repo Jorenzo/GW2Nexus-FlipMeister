@@ -7,6 +7,6 @@
 class CurrencyDisplay
 {
 public:
-  static void SetupResources(EntryData* Entry);
-  static void Render(EntryData* Entry, int value);
+  static void SetupResources(Addon* addon);
+  static void Render(Addon* addon, int value);
 };

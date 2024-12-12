@@ -54,7 +54,7 @@ inline void from_json(const nlohmann::json& j, PriceData& price) {
 class CommerceDataModule
 {
 public:
-  CommerceDataModule(EntryData* entry);
+  CommerceDataModule(Addon* addon);
   void                                    Update();
   const std::vector<TransactionData>*     GetCurrentBuys() const { return &CurrentBuys; };
   const std::vector<TransactionData>*     GetHistoryBuys() const { return &HistoryBuys; };
@@ -70,7 +70,7 @@ private:
   std::vector<TransactionData>            HistoryBuys;
   std::map<unsigned int, PriceData>       CurrentPrices;
   std::vector<unsigned int>               PriceWatch;
-  EntryData*                              Entry = nullptr;
+  Addon*                                  FAddon = nullptr;
   Timer                                   PricesTimer;
   HTTPRequestHandle                       SyncCurrentBuysHandle = HTTPREQUEST_HANDLE_INVALID;
   HTTPRequestHandle                       SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;

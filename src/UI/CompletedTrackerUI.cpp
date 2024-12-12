@@ -1,8 +1,8 @@
 #include "pch.h"
 
-CompletedTrackerUI::CompletedTrackerUI(EntryData* entry)
+CompletedTrackerUI::CompletedTrackerUI(Addon* addon)
 {
-  Entry = entry;
+  FAddon = addon;
 }
 
 void CompletedTrackerUI::Open()
@@ -18,7 +18,7 @@ void CompletedTrackerUI::Render()
     {
       if (ImGui::Button("Add Item Manually", ImVec2(150, 20)))
       {
-        Entry->UI.CompleteTrackedItem->Show();
+        FAddon->GetUI()->CompleteTrackedItem->Show();
       }
       if (ImGui::BeginTable("Completed Items", 12, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
       {
@@ -41,16 +41,16 @@ void CompletedTrackerUI::Render()
         int AllTotalBuyPrice = 0;
         int AllAfterTax = 0;
         int AllProfit = 0;
-        for (int i = 0; i < Entry->Modules.CompletedTracker->GetCompletedItems()->size(); ++i)
+        for (int i = 0; i < FAddon->GetModules()->CompletedTracker->GetCompletedItems()->size(); ++i)
         {
-          const CompletedItem& item = Entry->Modules.CompletedTracker->GetCompletedItems()->at(i);
+          const CompletedItem& item = FAddon->GetModules()->CompletedTracker->GetCompletedItems()->at(i);
 
           ItemData Data;
-          if (Entry->Modules.ItemData->RequestItemData(item.ItemID, Data))
+          if (FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
           {
             ImGui::TableNextRow();
             ImGui::TableNextColumn();
-            if (Texture* tex = Entry->APIDefs->GetTexture(Data.TextureID.c_str()))
+            if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
             {
               ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
               ImGui::SameLine();
@@ -59,22 +59,22 @@ void CompletedTrackerUI::Render()
             ImGui::TableNextColumn();
             ImGui::Text("%i", item.Quantity);
             ImGui::TableNextColumn();
-            CurrencyDisplay::Render(Entry, item.BuyPrice);
+            CurrencyDisplay::Render(FAddon, item.BuyPrice);
             ImGui::TableNextColumn();
             int TotalBuyPrice = item.BuyPrice * item.Quantity;
             AllTotalBuyPrice += TotalBuyPrice;
-            CurrencyDisplay::Render(Entry, TotalBuyPrice);
+            CurrencyDisplay::Render(FAddon, TotalBuyPrice);
             ImGui::TableNextColumn();
             //separator
             ImGui::TableNextColumn();
-            CurrencyDisplay::Render(Entry, item.SellPrice);
+            CurrencyDisplay::Render(FAddon, item.SellPrice);
             ImGui::TableNextColumn();
             int AfterTax = (int)((float)item.SellPrice * 0.85f);
-            CurrencyDisplay::Render(Entry, AfterTax);
+            CurrencyDisplay::Render(FAddon, AfterTax);
             ImGui::TableNextColumn();
             float TotalAfterTax = (item.SellPrice * item.Quantity) * 0.85f;
             AllAfterTax += (int)TotalAfterTax;
-            CurrencyDisplay::Render(Entry, (int)TotalAfterTax);
+            CurrencyDisplay::Render(FAddon, (int)TotalAfterTax);
             ImGui::TableNextColumn();
             float RoI = (float)TotalAfterTax / TotalBuyPrice;
             RoI -= 1.f; //1.15 to 0.15;
@@ -92,11 +92,11 @@ void CompletedTrackerUI::Render()
             ImGui::TableNextColumn();
             int TotalProfit = (int)TotalAfterTax - TotalBuyPrice;
             AllProfit += TotalProfit;
-            CurrencyDisplay::Render(Entry, TotalProfit);
+            CurrencyDisplay::Render(FAddon, TotalProfit);
             ImGui::TableNextColumn();
             ImGui::PushID(i);
             if (ImGui::Button("Edit"))
-              Entry->UI.CompleteTrackedItem->ShowEdit(item, i);
+              FAddon->GetUI()->CompleteTrackedItem->ShowEdit(item, i);
             ImGui::PopID();
             ImGui::TableNextColumn();
             ImGui::PushID(i);
@@ -123,12 +123,12 @@ void CompletedTrackerUI::Render()
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        CurrencyDisplay::Render(Entry, AllTotalBuyPrice);
+        CurrencyDisplay::Render(FAddon, AllTotalBuyPrice);
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
         ImGui::TableNextColumn();
-        CurrencyDisplay::Render(Entry, AllAfterTax);
+        CurrencyDisplay::Render(FAddon, AllAfterTax);
         ImGui::TableNextColumn();
         float RoI = 1.0f;
         if(AllTotalBuyPrice != 0)
@@ -146,13 +146,13 @@ void CompletedTrackerUI::Render()
         ImGui::Text("%.2f%%", RoI);
         ImGui::PopStyleColor();
         ImGui::TableNextColumn();
-        CurrencyDisplay::Render(Entry, AllProfit);
+        CurrencyDisplay::Render(FAddon, AllProfit);
         ImGui::EndTable();
 
 
         if (ItemToRemove != -1)
         {
-          Entry->Modules.CompletedTracker->RemoveCompletedItem(ItemToRemove);
+          FAddon->GetModules()->CompletedTracker->RemoveCompletedItem(ItemToRemove);
         }
 
         ImGui::End();

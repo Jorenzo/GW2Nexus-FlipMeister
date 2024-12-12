@@ -9,7 +9,7 @@ class HTTPClient
 {
 public:
 
-  HTTPClient(EntryData* entry);
+  HTTPClient(class Addon* addon);
   ~HTTPClient();
   HTTPRequestHandle QueueRequest(const std::string& url);
   void UpdateRequests();
@@ -31,5 +31,5 @@ private:
 
   static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp);
 
-  EntryData* Entry;
+  class Addon* FAddon;
 };

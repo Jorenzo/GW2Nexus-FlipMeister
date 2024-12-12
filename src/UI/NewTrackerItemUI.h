@@ -3,7 +3,7 @@
 class NewTrackerItemUI
 {
 public:
-  NewTrackerItemUI(EntryData* entry);
+  NewTrackerItemUI(Addon* addon);
 
   void Render();
   void Show();
@@ -19,7 +19,7 @@ private:
   bool QuantityError = false;
   bool BuyPriceError = false;
   TrackedItem Item;
-  EntryData* Entry = nullptr;
+  Addon* FAddon = nullptr;
   bool EditMode = false;
   int EditIndex = -1;
 };

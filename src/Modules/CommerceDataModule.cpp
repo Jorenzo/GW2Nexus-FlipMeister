@@ -1,9 +1,10 @@
 #include "pch.h"
 
 
-CommerceDataModule::CommerceDataModule(EntryData* entry)
+CommerceDataModule::CommerceDataModule(Addon* addon) :
+  PricesTimer()
 {
-  Entry = entry;
+  FAddon = addon;
   PullCurrentBuys();
   PullHistoryBuys();
   PricesTimer.SetNow();
@@ -34,7 +35,7 @@ void CommerceDataModule::PullCurrentBuys()
   if (SyncCurrentBuysHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
-  SyncCurrentBuysHandle = GW2API::Request(Entry, API_COMMERCE_TRANSACTIONS_CURRENT_BUYS);
+  SyncCurrentBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_BUYS);
 }
 
 void CommerceDataModule::PullHistoryBuys()
@@ -42,13 +43,13 @@ void CommerceDataModule::PullHistoryBuys()
   if (SyncHistoryBuysHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
-  SyncHistoryBuysHandle = GW2API::Request(Entry, API_COMMERCE_TRANSACTIONS_HISTORY_BUYS);
+  SyncHistoryBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_BUYS);
 }
 
 void CommerceDataModule::TrySyncCurrentBuys()
 {
   std::string payload = "";
-  if (GW2API::GetPayload(Entry, SyncCurrentBuysHandle, payload))
+  if (GW2API::GetPayload(FAddon, SyncCurrentBuysHandle, payload))
   {
     if (!payload.empty())
     {
@@ -84,7 +85,7 @@ void CommerceDataModule::TrySyncCurrentBuys()
 void CommerceDataModule::TrySyncHistoryBuys()
 {
   std::string payload = "";
-  if (GW2API::GetPayload(Entry, SyncHistoryBuysHandle, payload))
+  if (GW2API::GetPayload(FAddon, SyncHistoryBuysHandle, payload))
   {
     if (!payload.empty())
     {
@@ -135,7 +136,7 @@ int CommerceDataModule::GetSellPrice(unsigned int id)
 void CommerceDataModule::TrySyncPrices()
 {
   std::string payload = "";
-  if (GW2API::GetPayload(Entry, SyncPricesHandle, payload))
+  if (GW2API::GetPayload(FAddon, SyncPricesHandle, payload))
   {
     if (!payload.empty())
     {
@@ -165,6 +166,6 @@ void CommerceDataModule::RequestSyncPrices()
       ids += std::to_string(PriceWatch[i]);
     }
 
-    SyncPricesHandle = GW2API::Request(Entry, API_COMMERCE_PRICES, ids);
+    SyncPricesHandle = GW2API::Request(FAddon, API_COMMERCE_PRICES, ids);
   }
 }

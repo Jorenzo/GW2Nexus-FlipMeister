@@ -1,8 +1,8 @@
 #include "pch.h"
 
-NewTrackerItemUI::NewTrackerItemUI(EntryData* entry)
+NewTrackerItemUI::NewTrackerItemUI(Addon* addon)
 {
-  Entry = entry;
+  FAddon = addon;
 }
 
 void NewTrackerItemUI::Render()
@@ -105,9 +105,9 @@ void NewTrackerItemUI::Render()
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
         ItemData Data;
-        if (Item.ItemID != 0 && Entry->Modules.ItemData->RequestItemData(Item.ItemID, Data))
+        if (Item.ItemID != 0 && FAddon->GetModules()->ItemData->RequestItemData(Item.ItemID, Data))
         {
-          if (Texture* tex = Entry->APIDefs->GetTexture(Data.TextureID.c_str()))
+          if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
           {
             ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
             ImGui::SameLine();
@@ -116,9 +116,9 @@ void NewTrackerItemUI::Render()
           ImGui::TableNextColumn();
           ImGui::Text("%i", Item.Quantity);
           ImGui::TableNextColumn();
-          CurrencyDisplay::Render(Entry, Item.BuyPrice);
+          CurrencyDisplay::Render(FAddon, Item.BuyPrice);
           ImGui::TableNextColumn();
-          CurrencyDisplay::Render(Entry, Item.BuyPrice * Item.Quantity);
+          CurrencyDisplay::Render(FAddon, Item.BuyPrice * Item.Quantity);
         }
         ImGui::EndTable();
       }
@@ -131,9 +131,9 @@ void NewTrackerItemUI::Render()
       if (ImGui::Button("Confirm"))
       {
         if (!EditMode)
-          Entry->Modules.Tracker->TrackItem(Item);
+          FAddon->GetModules()->Tracker->TrackItem(Item);
         else
-          Entry->Modules.Tracker->EditItem(EditIndex, Item);
+          FAddon->GetModules()->Tracker->EditItem(EditIndex, Item);
         Visible = false;
       }
     }

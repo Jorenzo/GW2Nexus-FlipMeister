@@ -3,12 +3,12 @@
 class CompletedTrackerUI
 {
 public:
-  CompletedTrackerUI(EntryData* entry);
+  CompletedTrackerUI(Addon* addon);
 
   void                        Open();
   void                        Render();
 private:
-  EntryData*                  Entry = nullptr;
+  Addon*                      FAddon = nullptr;
   int                         RemovedIndex = -1;
   bool                        Visible = false;
 };

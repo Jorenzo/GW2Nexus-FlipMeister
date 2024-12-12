@@ -1,8 +1,8 @@
 #include "pch.h"
 
-HTTPClient::HTTPClient(EntryData* entry)
+HTTPClient::HTTPClient(Addon* addon)
 {
-  Entry = entry;
+  FAddon = addon;
   curl_global_init(CURL_GLOBAL_DEFAULT);
   multi_handle = curl_multi_init();
   next_handle_id = 1;
@@ -68,7 +68,7 @@ bool HTTPClient::IsRequestDone(HTTPRequestHandle handle)
   auto it = requests.find(handle);
   if (it == requests.end()) 
   {
-    Log(Entry, CRITICAL, "HTTPClient::IsRequestDone: Invalid Handle %i", handle);
+    FAddon->Log(CRITICAL, "HTTPClient::IsRequestDone: Invalid Handle %i", handle);
   }
 
   return it->second.is_done;
@@ -77,12 +77,14 @@ bool HTTPClient::IsRequestDone(HTTPRequestHandle handle)
 std::string HTTPClient::GetResponse(HTTPRequestHandle handle)
 {
   auto it = requests.find(handle);
-  if (it == requests.end()) {
-    Log(Entry, CRITICAL, "HTTPClient::GetResponse: Invalid Handle %i", handle);
+  if (it == requests.end()) 
+  {
+    FAddon->Log(CRITICAL, "HTTPClient::GetResponse: Invalid Handle %i", handle);
   }
 
-  if (!it->second.is_done) {
-    Log(Entry, CRITICAL, "HTTPClient::GetResponse: Request not yet complete! Are you checking if its done?");
+  if (!it->second.is_done) 
+  {
+    FAddon->Log(CRITICAL, "HTTPClient::GetResponse: Request not yet complete! Are you checking if its done?");
   }
 
   return *(it->second.response_data);
@@ -93,7 +95,7 @@ void HTTPClient::CleanupRequest(HTTPRequestHandle handle)
   auto it = requests.find(handle);
   if (it == requests.end()) 
   {
-    Log(Entry, CRITICAL, "HTTPClient::CleanupRequest: Invalid Handle %i", handle);
+    FAddon->Log(CRITICAL, "HTTPClient::CleanupRequest: Invalid Handle %i", handle);
   }
 
   curl_multi_remove_handle(multi_handle, it->second.easy_handle);
