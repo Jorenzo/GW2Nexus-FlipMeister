@@ -86,5 +86,5 @@ void AddonRender()
 
 void AddonOptions()
 {
-  addon.AddonRender();
+  addon.AddonOptions();
 }
