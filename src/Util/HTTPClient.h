@@ -1,43 +1,35 @@
 #pragma once
 #pragma comment(lib, "urlmon.lib")
 
-namespace HTTPClient {
-  inline static std::string GetRequest(std::string url) {
-    const char* cUrl = url.c_str();
-    std::wstring wUrl(cUrl, cUrl + strlen(cUrl));
-    IStream* stream;
-    HRESULT result = URLOpenBlockingStreamW(0, wUrl.c_str(), &stream, 0, 0);
-    if (result != 0) {
-      return "";
-    }
 
-    const unsigned long chunkSize = 128;
-    char buffer[chunkSize];
-    unsigned long bytesRead;
-    std::stringstream strStream;
+using HTTPRequestHandle = int;
+#define HTTPREQUEST_HANDLE_INVALID -1
 
-    stream->Read(buffer, chunkSize, &bytesRead);
-    while (bytesRead > 0) {
-      strStream.write(buffer, (long long)bytesRead);
-      stream->Read(buffer, chunkSize, &bytesRead);
-    }
-    stream->Release();
-    std::string response = strStream.str();
-    return response;
-  }
+class HTTPClient
+{
+public:
 
-  //Thanks ChatGPT also Delta pls fix ur API thanks :)
-  std::pair<std::string, std::string> inline static SplitRemoteFromEndpoint(const std::string& endpoint) {
-    size_t protocolEnd = endpoint.find("://");
-    size_t start = (protocolEnd != std::string::npos) ? protocolEnd + 3 : 0; // Skip "://" if present
+  HTTPClient(EntryData* entry);
+  ~HTTPClient();
+  HTTPRequestHandle QueueRequest(const std::string& url);
+  void UpdateRequests();
+  bool IsRequestDone(HTTPRequestHandle handle);
+  std::string GetResponse(HTTPRequestHandle handle);
+  void CleanupRequest(HTTPRequestHandle handle);
 
-    size_t pathStart = endpoint.find('/', start); // Find where the path starts
-    if (pathStart == std::string::npos) {
-      // No path found, assume the entire remaining string is the remote
-      return { endpoint.substr(start), "" };
-    }
+  std::pair<std::string, std::string> static SplitRemoteFromEndpoint(const std::string& endpoint);
+private:
+  struct RequestData {
+    CURL* easy_handle;
+    std::shared_ptr<std::string> response_data;
+    bool is_done;
+  };
 
-    // Split into remote and remainder
-    return { endpoint.substr(0, pathStart), endpoint.substr(pathStart) };
-  }
-}
+  CURLM* multi_handle;
+  HTTPRequestHandle next_handle_id;
+  std::unordered_map<HTTPRequestHandle, RequestData> requests;
+
+  static size_t WriteCallback(void* contents, size_t size, size_t nmemb, std::string* userp);
+
+  EntryData* Entry;
+};

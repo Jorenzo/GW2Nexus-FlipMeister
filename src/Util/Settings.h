@@ -33,6 +33,7 @@ class Settings
 public:
   Settings(EntryData* entry);
   void Init();
+  void Update();
   std::string GetAPIKey() const { return Data.APIKey; }
   void SetAPIKey(std::string key);
   std::string GetConnectedAccount() const { return ConnectedAccount; }
@@ -40,9 +41,10 @@ public:
 private:
   void WriteSettings();
   void ReadSettings();
-  void ConnectAccount();
+  void RequestConnectAccount();
+  void TryConnectAccount();
   SettingsData Data;
   std::string ConnectedAccount = "";
-
   EntryData* Entry = nullptr;
+  HTTPRequestHandle ConnectedAccountHandle = HTTPREQUEST_HANDLE_INVALID;
 };

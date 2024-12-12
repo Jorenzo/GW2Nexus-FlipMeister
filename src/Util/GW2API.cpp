@@ -1,6 +1,6 @@
 #include "pch.h"
 
-std::string GW2API::Request(EntryData* Entry, const APIEndPointDefinition& Endpoint, const std::string& ExtraData)
+HTTPRequestHandle GW2API::Request(EntryData* Entry, const APIEndPointDefinition& Endpoint, const std::string& ExtraData)
 {
   std::string payload = "";
   try
@@ -28,31 +28,22 @@ std::string GW2API::Request(EntryData* Entry, const APIEndPointDefinition& Endpo
       FullRequest += ExtraData;
     }
 
-    payload = HTTPClient::GetRequest(FullRequest);
-    int retries = 0;
-    while (payload.empty() && retries < 0) //Turned off retries
-    {
-      payload = HTTPClient::GetRequest(FullRequest);
-      retries++;
-    }
-
-
-    if (!payload.empty())
-    {
-      if (retries > 0)
-      {
-        Log(Entry, WARNING, "Found payload for '%s' after %i retries:", FullRequest.c_str(), retries);
-      }
-    }
-    else
-    {
-      Log(Entry, CRITICAL, "Payload for '%s' turned up empty after %i retries:", FullRequest.c_str(), retries);
-    }
+    return Entry->HTTPClient->QueueRequest(FullRequest);
   }
   catch (const std::exception& e)
   {
     Log(Entry, CRITICAL, "Unknown exception performing HTTP call: \n%s", e.what());
   }
 
-  return payload;
+  return HTTPREQUEST_HANDLE_INVALID;
+}
+
+bool GW2API::GetPayload(EntryData* Entry, HTTPRequestHandle handle, std::string& outData)
+{
+  if (!Entry->HTTPClient->IsRequestDone(handle))
+    return false;
+
+  outData = Entry->HTTPClient->GetResponse(handle);
+  Entry->HTTPClient->CleanupRequest(handle);
+  return true;
 }

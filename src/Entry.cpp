@@ -71,6 +71,8 @@ void AddonLoad(AddonAPI* aApi)
   Entry.NexusLink = (NexusLinkData*)Entry.APIDefs->GetResource("DL_NEXUS_LINK");
   //Entry.MumbleLink = (Mumble::Data*)Entry.APIDefs->GetResource("DL_MUMBLE_LINK");
 
+  Entry.HTTPClient = new HTTPClient(&Entry);
+
   Entry.Settings = new Settings(&Entry);
   Entry.Settings->Init();
 
@@ -117,11 +119,25 @@ void AddonUnload()
   Entry.APIDefs->DeregisterRender(AddonRender);
   Entry.APIDefs->DeregisterRender(AddonOptions);
 
+  delete Entry.HTTPClient;
+  delete Entry.Settings;
+  delete Entry.Modules.CommerceData;
+  delete Entry.Modules.CompletedTracker;
+  delete Entry.Modules.ItemData;
+  delete Entry.Modules.Tracker;
+  delete Entry.UI.CompletedTracker;
+  delete Entry.UI.CompleteTrackedItem;
+  delete Entry.UI.TradingPost;
+  delete Entry.UI.NewTrackerItem;
+  delete Entry.UI.Tracker;
+
   Log(&Entry, INFO, ADDON_LOG_NAME " Addon Unloaded");
 }
 
 void AddonRender()
 {
+  Entry.HTTPClient->UpdateRequests();
+  Entry.Settings->Update();
   Entry.Modules.CommerceData->Update();
   Entry.Modules.ItemData->Update();
 
@@ -134,7 +150,7 @@ void AddonRender()
       Texture* LogoTexture = Entry.APIDefs->GetTexture(LOGO);
       if (LogoTexture)
       {
-        float scale = 0.35f;
+        float scale = 0.3f;
         ImVec2 imageSize = ImVec2(((float)LogoTexture->Width) * scale, ((float)LogoTexture->Height) * scale);
         float contentRegionWidth = ImGui::GetContentRegionAvail().x;
         float xPos = (contentRegionWidth - imageSize.x) * 0.5f;
@@ -142,6 +158,7 @@ void AddonRender()
         ImGui::Image((ImTextureID)LogoTexture->Resource, imageSize);
       }
 
+      ImGui::Separator();
       ImGui::Separator();
 
       //ImGui::Text("UI Tick: %u", nullptr != Entry.MumbleLink ? Entry.MumbleLink->UITick : 0 );

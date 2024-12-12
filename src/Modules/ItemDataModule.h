@@ -30,9 +30,12 @@ public:
   bool                                    RequestItemData(unsigned int id, ItemData& item);
   void                                    Update();
 private:
-  void                                    SyncItems();
+  void                                    TrySyncItems();
+  void                                    RequestSyncItems();
   std::map<unsigned int, ItemData>        Items;
   std::vector<unsigned int>               QueuedIDs;
+  std::vector<unsigned int>               ProcessedIDs;
   EntryData*                              Entry;
   Timer                                   UpdateTimer;
+  HTTPRequestHandle                       SyncItemsRequestHandle = HTTPREQUEST_HANDLE_INVALID;
 };

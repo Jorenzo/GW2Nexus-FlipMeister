@@ -29,7 +29,7 @@ struct EntryData
   NexusLinkData* NexusLink = nullptr;
   //Mumble::Data* MumbleLink = nullptr;
   Settings* Settings = nullptr;
-
+  HTTPClient* HTTPClient = nullptr;
   ModuleData Modules = {};
   UIData UI = {};
 };

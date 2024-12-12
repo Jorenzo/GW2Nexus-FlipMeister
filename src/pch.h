@@ -6,9 +6,9 @@
 #include <string>
 #include <fstream>
 #include <filesystem>
-#include <urlmon.h>
 #include <sstream>
 #include <chrono>
+#include "curl/curl.h"
 
 #include "../assets/resource.h"
 

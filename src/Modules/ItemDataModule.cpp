@@ -8,10 +8,14 @@ ItemDataModule::ItemDataModule(EntryData* entry)
 
 void ItemDataModule::Update()
 {
-  if (UpdateTimer.GetSecondsPassed() > 2.0f)
+  if (UpdateTimer.GetSecondsPassed() > 2.0f && SyncItemsRequestHandle == HTTPREQUEST_HANDLE_INVALID)
   {
     UpdateTimer.SetNow();
-    SyncItems();
+    RequestSyncItems();
+  }
+  if (SyncItemsRequestHandle != HTTPREQUEST_HANDLE_INVALID)
+  {
+    TrySyncItems();
   }
 }
 
@@ -31,21 +35,11 @@ bool ItemDataModule::RequestItemData(unsigned int id, ItemData& data)
   return false;
 }
 
-void ItemDataModule::SyncItems()
+void ItemDataModule::TrySyncItems()
 {
-  if (QueuedIDs.size() > 0)
+  std::string payload = "";
+  if (GW2API::GetPayload(Entry, SyncItemsRequestHandle, payload))
   {
-    std::string ids = "?ids=";
-    for (int i = 0; i < QueuedIDs.size(); ++i)
-    {
-      if (i != 0)
-        ids += ",";
-
-      ids += std::to_string(QueuedIDs[i]);
-    }
-
-    std::string payload = GW2API::Request(Entry, API_ITEMS, ids);
-
     if (!payload.empty())
     {
       nlohmann::json Json = nlohmann::json::parse(payload);
@@ -57,9 +51,36 @@ void ItemDataModule::SyncItems()
         //request a texture
         std::pair<std::string, std::string> splitURL = HTTPClient::SplitRemoteFromEndpoint(item.IconUrl);
         Entry->APIDefs->LoadTextureFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
+
+        ProcessedIDs.clear();
       }
     }
+    else
+      Log(Entry, ELogLevel_WARNING, "Found empty ItemData payload");
 
+    SyncItemsRequestHandle = HTTPREQUEST_HANDLE_INVALID;
+  }
+}
+
+void ItemDataModule::RequestSyncItems()
+{
+  //If for some reason we found an empty payload, requeue these items again in the hope we find them this time.
+  QueuedIDs.insert(QueuedIDs.end(), ProcessedIDs.begin(), ProcessedIDs.end());
+ 
+  if (QueuedIDs.size() > 0 || ProcessedIDs.size())
+  {
+    std::string ids = "?ids=";
+    for (int i = 0; i < QueuedIDs.size(); ++i)
+    {
+      if (i != 0)
+        ids += ",";
+
+      ids += std::to_string(QueuedIDs[i]);
+    }
+
+    SyncItemsRequestHandle = GW2API::Request(Entry, API_ITEMS, ids);
+
+    ProcessedIDs = QueuedIDs;
     QueuedIDs.clear();
   }
 }

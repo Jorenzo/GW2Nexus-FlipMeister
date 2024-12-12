@@ -62,11 +62,17 @@ public:
   void                                    PullCurrentBuys();
   void                                    PullHistoryBuys();
 private:
-  void                                    SyncPrices();
+  void                                    RequestSyncPrices();
+  void                                    TrySyncPrices();
+  void                                    TrySyncCurrentBuys();
+  void                                    TrySyncHistoryBuys();
   std::vector<TransactionData>            CurrentBuys;
   std::vector<TransactionData>            HistoryBuys;
   std::map<unsigned int, PriceData>       CurrentPrices;
   std::vector<unsigned int>               PriceWatch;
   EntryData*                              Entry = nullptr;
   Timer                                   PricesTimer;
+  HTTPRequestHandle                       SyncCurrentBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+  HTTPRequestHandle                       SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+  HTTPRequestHandle                       SyncPricesHandle = HTTPREQUEST_HANDLE_INVALID;
 };

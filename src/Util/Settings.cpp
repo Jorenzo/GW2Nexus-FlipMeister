@@ -8,14 +8,22 @@ Settings::Settings(EntryData* entry)
 void Settings::Init()
 {
   ReadSettings();
-  ConnectAccount();
+  RequestConnectAccount();
+}
+
+void Settings::Update()
+{
+  if (ConnectedAccountHandle != HTTPREQUEST_HANDLE_INVALID)
+  {
+    TryConnectAccount();
+  }
 }
 
 void Settings::SetAPIKey(std::string key)
 {
   Data.APIKey = key;
   WriteSettings();
-  ConnectAccount();
+  RequestConnectAccount();
 }
 
 
@@ -82,14 +90,29 @@ void Settings::ReadSettings()
   }
 }
 
-void Settings::ConnectAccount()
+void Settings::RequestConnectAccount()
 {
-  std::string payload = GW2API::Request(Entry, API_ACCOUNT);
-
-  if (!payload.empty())
+  if (ConnectedAccountHandle != HTTPREQUEST_HANDLE_INVALID)
   {
-    nlohmann::json Json = nlohmann::json::parse(payload);
-    AccountData data = Json.get<AccountData>();
-    ConnectedAccount = data.Name;
+    Log(Entry, CRITICAL, "Trying to connect account, but already have an outgoing handle. Overriding");
+  }
+  ConnectedAccountHandle = GW2API::Request(Entry, API_ACCOUNT);
+}
+
+void Settings::TryConnectAccount()
+{
+  std::string payload = "";
+  if (GW2API::GetPayload(Entry, ConnectedAccountHandle, payload))
+  {
+    if (!payload.empty())
+    {
+      nlohmann::json Json = nlohmann::json::parse(payload);
+      AccountData data = Json.get<AccountData>();
+      ConnectedAccount = data.Name;
+    }
+    else
+      Log(Entry, WARNING, "No payload when trying to connect account! Provided key: %s", Data.APIKey.c_str());
+
+    ConnectedAccountHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }
