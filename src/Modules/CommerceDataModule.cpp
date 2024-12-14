@@ -12,7 +12,7 @@ CommerceDataModule::CommerceDataModule(Addon* addon) :
 
 void CommerceDataModule::Update()
 {
-  if (PricesTimer.GetSecondsPassed() > 5.0 && SyncPricesHandle == HTTPREQUEST_HANDLE_INVALID)
+  if ((PricesTimer.GetSecondsPassed() > FAddon->GetSettings()->AutoUpdatePriceWatchSeconds() || (NewItemsInPriceWatch && PricesTimer.GetSecondsPassed() > 5.0)) && SyncPricesHandle == HTTPREQUEST_HANDLE_INVALID)
   {
     RequestSyncPrices();
   }
@@ -128,6 +128,7 @@ int CommerceDataModule::GetSellPrice(unsigned int id)
   if (std::find(PriceWatch.begin(), PriceWatch.end(), id) == PriceWatch.end())
   {
     PriceWatch.push_back(id);
+    NewItemsInPriceWatch = true;
   }
   return 0;
 }
@@ -167,5 +168,6 @@ void CommerceDataModule::RequestSyncPrices()
     }
 
     SyncPricesHandle = GW2API::Request(FAddon, API_COMMERCE_PRICES, ids);
+    NewItemsInPriceWatch = false;
   }
 }

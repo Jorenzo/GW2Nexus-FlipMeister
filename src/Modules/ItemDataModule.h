@@ -27,15 +27,16 @@ class ItemDataModule
 {
 public:
   ItemDataModule(Addon* addon);
-  bool                                    RequestItemData(unsigned int id, ItemData& item);
-  void                                    Update();
+  bool                                                      RequestItemData(unsigned int id, ItemData& item);
+  void                                                      Update();
+  bool                                                      IsUpdatingItems() const { return SyncItemsRequestHandle != HTTPREQUEST_HANDLE_INVALID || QueuedIDs.size() > 0; }
 private:
-  void                                    TrySyncItems();
-  void                                    RequestSyncItems();
-  std::map<unsigned int, ItemData>        Items;
-  std::vector<unsigned int>               QueuedIDs;
-  std::vector<unsigned int>               ProcessedIDs;
-  Addon*                                  FAddon;
-  Timer                                   UpdateTimer;
-  HTTPRequestHandle                       SyncItemsRequestHandle = HTTPREQUEST_HANDLE_INVALID;
+  void                                                      TrySyncItems();
+  void                                                      RequestSyncItems();
+  std::map<unsigned int, std::pair<bool, ItemData>>         Items;
+  std::vector<unsigned int>                                 QueuedIDs;
+  std::vector<unsigned int>                                 ProcessedIDs;
+  Addon*                                                    FAddon;
+  Timer                                                     UpdateTimer;
+  HTTPRequestHandle                                         SyncItemsRequestHandle = HTTPREQUEST_HANDLE_INVALID;
 };

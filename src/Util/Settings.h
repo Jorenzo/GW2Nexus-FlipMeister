@@ -6,12 +6,18 @@ struct SettingsData
 {
   std::string APIKey = "";
   bool ShowQuickAccessIcon = true;
+  bool AutoUpdateTradingPost = true;
+  int AutoUpdateTradingPostSeconds = 180;
+  int AutoUpdatePriceWatchSeconds = 60;
 };
 inline void to_json(nlohmann::json& j, const SettingsData& data) 
 {
   j = nlohmann::json{
     { "APIKey", data.APIKey },
     { "ShowQuickAccessIcon", data.ShowQuickAccessIcon },
+    { "AutoUpdateTradingPost", data.AutoUpdateTradingPost },
+    { "AutoUpdateTradingPostSeconds", data.AutoUpdateTradingPostSeconds },
+    { "AutoUpdatePriceWatchSeconds", data.AutoUpdatePriceWatchSeconds },
   };
 }
 inline void from_json(const nlohmann::json& j, SettingsData& data) 
@@ -20,6 +26,12 @@ inline void from_json(const nlohmann::json& j, SettingsData& data)
     j.at("APIKey").get_to(data.APIKey);
   if(j.contains("ShowQuickAccessIcon"))
     j.at("ShowQuickAccessIcon").get_to(data.ShowQuickAccessIcon);
+  if (j.contains("AutoUpdateTradingPost"))
+    j.at("AutoUpdateTradingPost").get_to(data.AutoUpdateTradingPost);
+  if (j.contains("AutoUpdateTradingPostSeconds"))
+    j.at("AutoUpdateTradingPostSeconds").get_to(data.AutoUpdateTradingPostSeconds);
+  if (j.contains("AutoUpdatePriceWatchSeconds"))
+    j.at("AutoUpdatePriceWatchSeconds").get_to(data.AutoUpdatePriceWatchSeconds);
 }
 
 struct AccountData
@@ -48,6 +60,9 @@ public:
   std::string GetConnectedAccount() const { return ConnectedAccount; }
   bool HasValidAPIKey() { return !ConnectedAccount.empty(); }
   bool ShowQuickAccessIcon() const { return Data.ShowQuickAccessIcon; }
+  bool AutoUpdateTradingPost() const { return Data.AutoUpdateTradingPost; }
+  int AutoUpdateTradingPostSeconds() const { return Data.AutoUpdateTradingPostSeconds; }
+  int AutoUpdatePriceWatchSeconds() const { return Data.AutoUpdatePriceWatchSeconds; }
 private:
   void WriteSettings();
   void ReadSettings();

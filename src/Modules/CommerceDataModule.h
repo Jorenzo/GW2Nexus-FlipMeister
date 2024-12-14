@@ -40,7 +40,7 @@ struct PriceData
   PriceObject Sells = {};
 };
 inline void to_json(nlohmann::json& j, const PriceData& price) {
-  j = nlohmann::json 
+  j = nlohmann::json
   {
     { "id", price.ItemID },
     { "sells", price.Sells },
@@ -56,11 +56,14 @@ class CommerceDataModule
 public:
   CommerceDataModule(Addon* addon);
   void                                    Update();
-  const std::vector<TransactionData>*     GetCurrentBuys() const { return &CurrentBuys; };
-  const std::vector<TransactionData>*     GetHistoryBuys() const { return &HistoryBuys; };
+  const std::vector<TransactionData>*     GetCurrentBuys() const { return &CurrentBuys; }
+  const std::vector<TransactionData>*     GetHistoryBuys() const { return &HistoryBuys; }
   int                                     GetSellPrice(unsigned int id);
   void                                    PullCurrentBuys();
   void                                    PullHistoryBuys();
+  bool                                    IsUpdatingPrices() const { return SyncPricesHandle != HTTPREQUEST_HANDLE_INVALID || NewItemsInPriceWatch; }
+  bool                                    IsUpdatingCurrenBuys() const { return SyncCurrentBuysHandle != HTTPREQUEST_HANDLE_INVALID; }
+  bool                                    IsUpdatingHistoryBuys() const { return SyncHistoryBuysHandle != HTTPREQUEST_HANDLE_INVALID; }
 private:
   void                                    RequestSyncPrices();
   void                                    TrySyncPrices();
@@ -75,4 +78,5 @@ private:
   HTTPRequestHandle                       SyncCurrentBuysHandle = HTTPREQUEST_HANDLE_INVALID;
   HTTPRequestHandle                       SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;
   HTTPRequestHandle                       SyncPricesHandle = HTTPREQUEST_HANDLE_INVALID;
+  bool                                    NewItemsInPriceWatch = false;
 };

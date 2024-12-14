@@ -31,6 +31,13 @@ void CompleteTrackedItemUI::Render()
         }
       }
 
+      if (FAddon->GetModules()->ItemData->IsUpdatingItems())
+      {
+        ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
+        ImGui::SetNextItemWidth(150.0f);
+        ImGui::Text("Fetching Items...");
+      }
+
       if (ItemIDError)
       {
         ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
@@ -95,6 +102,7 @@ void CompleteTrackedItemUI::Render()
         }
         ImGui::EndTable();
       }
+
 
       if (ImGui::Button("Cancel"))
       {

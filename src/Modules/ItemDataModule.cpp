@@ -24,8 +24,12 @@ bool ItemDataModule::RequestItemData(unsigned int id, ItemData& data)
   auto it = Items.find(id);
   if (it != Items.end())
   {
-    data = it->second;
-    return true;
+    if (it->second.first) //is a valid item
+    {
+      data = it->second.second;
+      return true;
+    }
+    return false;
   }
   
   if (std::find(QueuedIDs.begin(), QueuedIDs.end(), id) == QueuedIDs.end())
@@ -48,7 +52,7 @@ void ItemDataModule::TrySyncItems()
         try
         {
           ItemData item = item_json.get<ItemData>();
-          Items[item.ID] = item;
+          Items[item.ID] = std::pair<bool, ItemData>(true, item);
 
           //request a texture
           std::pair<std::string, std::string> splitURL = HTTPClient::SplitRemoteFromEndpoint(item.IconUrl);
@@ -57,6 +61,17 @@ void ItemDataModule::TrySyncItems()
         catch (const nlohmann::json::exception& e)
         {
           FAddon->Log(WARNING, "Can not create ItemData: %s", e.what());
+        }
+      }
+
+      //validate if we have the items now
+      for (int i = 0; i < ProcessedIDs.size(); ++i)
+      {
+        auto it = Items.find(ProcessedIDs[i]);
+        if (it == Items.end())
+        {
+          //item not in map, add an invalid item so we don't request it again
+          Items[ProcessedIDs[i]] = std::pair<bool, ItemData>(false, ItemData());
         }
       }
       ProcessedIDs.clear();

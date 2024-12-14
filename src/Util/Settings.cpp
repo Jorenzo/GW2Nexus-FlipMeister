@@ -51,6 +51,27 @@ void Settings::Render()
     WriteSettings();
     FAddon->ShowQuickAccessIconChanged();
   }
+  if (ImGui::InputInt("Price Watch Refresh Time", &Data.AutoUpdatePriceWatchSeconds))
+  {
+    Data.AutoUpdatePriceWatchSeconds = std::max(Data.AutoUpdatePriceWatchSeconds, 15);
+    WriteSettings();
+  }
+  if (ImGui::IsItemHovered())
+    ImGui::SetTooltip("Time in seconds between each refresh of all the item prices");
+  ImGui::Text("Trading Post");
+  ImGui::Separator();
+  if (ImGui::Checkbox("Auto Refresh Trading Post Transactions", &Data.AutoUpdateTradingPost))
+    WriteSettings();
+  if (ImGui::IsItemHovered())
+    ImGui::SetTooltip("When enabled, the trading post UI will refresh the transactions of the selected tab automatically");
+  if (ImGui::InputInt("Trading Post Refresh Time", &Data.AutoUpdateTradingPostSeconds))
+  {
+    Data.AutoUpdateTradingPostSeconds = std::max(Data.AutoUpdateTradingPostSeconds, 15);
+    WriteSettings();
+  }
+  if (ImGui::IsItemHovered())
+    ImGui::SetTooltip("Time in seconds between each refresh of the selected transactions tab in the trading post UI");
+
 }
 
 void Settings::WriteSettings()

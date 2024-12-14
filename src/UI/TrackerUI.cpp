@@ -16,6 +16,19 @@ void TrackerUI::Render()
     FAddon->GetUI()->NewTrackerItem->Show();
   }
 
+  if (FAddon->GetModules()->ItemData->IsUpdatingItems())
+  {
+    ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
+    ImGui::SetNextItemWidth(150.0f);
+    ImGui::Text("Fetching Items...");
+  }
+  else if (FAddon->GetModules()->CommerceData->IsUpdatingPrices())
+  {
+    ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
+    ImGui::SetNextItemWidth(150.0f);
+    ImGui::Text("Fetching Prices...");
+  }
+
   if (ImGui::BeginTable("Tracked Items", 13, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
   {
     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
@@ -65,14 +78,24 @@ void TrackerUI::Render()
         //separator
         ImGui::TableNextColumn();
         int SellPrice = FAddon->GetModules()->CommerceData->GetSellPrice(item.ItemID);
-        CurrencyDisplay::Render(FAddon, SellPrice);
+        if (SellPrice != 0)
+        {
+          CurrencyDisplay::Render(FAddon, SellPrice);
+        }
         ImGui::TableNextColumn();
-        int AfterTax = (int)((float)SellPrice * 0.85f);
-        CurrencyDisplay::Render(FAddon, SellPrice != 0 ? AfterTax : 0);
+        if (SellPrice != 0)
+        {
+          int AfterTax = (int)((float)SellPrice * 0.85f);
+          CurrencyDisplay::Render(FAddon, AfterTax);
+        }
         ImGui::TableNextColumn();
-        float TotalAfterTax = (SellPrice * item.Quantity) * 0.85f;
-        AllAfterTax += SellPrice != 0 ? (int)TotalAfterTax : 0;
-        CurrencyDisplay::Render(FAddon, SellPrice != 0 ? (int)TotalAfterTax : 0);
+        float TotalAfterTax = 0;
+        if (SellPrice != 0)
+        {
+          TotalAfterTax = (SellPrice * item.Quantity) * 0.85f;
+          AllAfterTax += (int)TotalAfterTax;
+          CurrencyDisplay::Render(FAddon, (int)TotalAfterTax);
+        }
         ImGui::TableNextColumn();
         if (SellPrice != 0)
         {
@@ -90,13 +113,13 @@ void TrackerUI::Render()
           ImGui::Text("%.2f%%", RoI);
           ImGui::PopStyleColor();
         }
-        else
-          ImGui::Text("0%%");
         ImGui::TableNextColumn();
-        int TotalProfit = (int)TotalAfterTax - TotalBuyPrice;
         if (SellPrice != 0)
+        {
+          int TotalProfit = (int)TotalAfterTax - TotalBuyPrice;
           AllProfit += TotalProfit;
-        CurrencyDisplay::Render(FAddon, SellPrice != 0 ? TotalProfit : 0);
+          CurrencyDisplay::Render(FAddon, TotalProfit);
+        }
         ImGui::TableNextColumn();
         ImGui::PushID(i);
         if (ImGui::Button("Edit"))
