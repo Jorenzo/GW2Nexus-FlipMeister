@@ -45,9 +45,9 @@ public:
   void Update();
   void Render();
   std::string GetAPIKey() const { return Data.APIKey; }
-  void SetAPIKey(std::string key);
   std::string GetConnectedAccount() const { return ConnectedAccount; }
   bool HasValidAPIKey() { return !ConnectedAccount.empty(); }
+  bool ShowQuickAccessIcon() const { return Data.ShowQuickAccessIcon; }
 private:
   void WriteSettings();
   void ReadSettings();

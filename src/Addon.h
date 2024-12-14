@@ -50,7 +50,12 @@ public:
   const UIData* GetUI() const { return &UI; }
   //
   void Log(ELogLevel LogType, const std::string Log, ...);
+  //
+  void ShowQuickAccessIconChanged();
 private:
+  void AddQuickAccessIcon();
+  void RemoveQuickAccessIcon();
+  //
   HMODULE hSelf = nullptr;
   AddonAPI* APIDefs = nullptr;
   NexusLinkData* NexusLink = nullptr;

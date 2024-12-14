@@ -12,12 +12,10 @@ public:
 private:
   void Init();
   bool Visible = false;
+  CurrencyInputField BuyPriceInputField;
   char ItemIDBuffer[128] = "";
-  char QuantityBuffer[128] = "";
-  char BuyPriceBuffer[128] = "";
   bool ItemIDError = false;
-  bool QuantityError = false;
-  bool BuyPriceError = false;
+  int Quantity = 0;
   TrackedItem Item;
   Addon* FAddon = nullptr;
   bool EditMode = false;

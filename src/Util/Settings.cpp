@@ -29,7 +29,9 @@ void Settings::Render()
 
   if (ImGui::InputText("Enter API Key", APIInputBuffer, IM_ARRAYSIZE(APIInputBuffer), ImGuiInputTextFlags_Password))
   {
-    SetAPIKey(APIInputBuffer);
+    Data.APIKey = APIInputBuffer;
+    WriteSettings();
+    RequestConnectAccount();
   }
 
   if (HasValidAPIKey())
@@ -47,16 +49,9 @@ void Settings::Render()
   if (ImGui::Checkbox("Show Quick Access Icon", &Data.ShowQuickAccessIcon))
   {
     WriteSettings();
+    FAddon->ShowQuickAccessIconChanged();
   }
 }
-
-void Settings::SetAPIKey(std::string key)
-{
-  Data.APIKey = key;
-  WriteSettings();
-  RequestConnectAccount();
-}
-
 
 void Settings::WriteSettings()
 {

@@ -13,13 +13,10 @@ private:
   void Init();
   bool Visible = false;
   char ItemIDBuffer[128] = "";
-  char QuantityBuffer[128] = "";
-  char BuyPriceBuffer[128] = "";
-  char SellPriceBuffer[128] = "";
   bool ItemIDError = false;
-  bool QuantityError = false;
-  bool BuyPriceError = false;
-  bool SellPriceError = false;
+  int Quantity = 0;
+  CurrencyInputField BuyPriceInputField;
+  CurrencyInputField SellPriceInputField;
   CompletedItem Item;
   Addon* FAddon = nullptr;
   bool EditMode = false;

@@ -1,6 +1,7 @@
 #include "pch.h"
 
-NewTrackerItemUI::NewTrackerItemUI(Addon* addon)
+NewTrackerItemUI::NewTrackerItemUI(Addon* addon) :
+  BuyPriceInputField(addon)
 {
   FAddon = addon;
 }
@@ -9,9 +10,9 @@ void NewTrackerItemUI::Render()
 {
   if (Visible)
   {
-    std::string WindowName = "Add Tracker Item";
+    std::string WindowName = "Add Item To Tracker";
     if (EditMode)
-      WindowName = "Edit Tracker Item";
+      WindowName = "Edit Item In Tracker";
     if (ImGui::Begin(WindowName.c_str(), &Visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
     {
       if (ImGui::InputText("Item ID", ItemIDBuffer, IM_ARRAYSIZE(ItemIDBuffer), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank))
@@ -36,63 +37,21 @@ void NewTrackerItemUI::Render()
         ImGui::PopStyleColor();
       }
 
-      if (ImGui::InputText("Quantity", QuantityBuffer, IM_ARRAYSIZE(QuantityBuffer), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank))
+      if (ImGui::InputInt("Quantity", &Quantity))
       {
-        char *endptr = nullptr;
-        unsigned long parsed_value = std::strtoul(QuantityBuffer, &endptr, 10);
-        if (endptr != QuantityBuffer && *endptr == '\0' && parsed_value <= UINT32_MAX)
-        {
-          unsigned int value = static_cast<unsigned int>(parsed_value);
-          if (value > 0)
-          {
-            Item.Quantity = value;
-            QuantityError = false;
-          }
-          else
-            QuantityError = true;
-        }
-        else
-        {
-          QuantityError = true;
-        }
+        Quantity = std::max(Quantity, 1);
+        Item.Quantity = Quantity;
       }
 
-      if (QuantityError)
+      int outBuyPrice = 0;
+      if (BuyPriceInputField.Render(outBuyPrice, 1, "Buy Price"))
       {
-        ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
-        ImGui::Text("Invalid Value");
-        ImGui::PopStyleColor();
-      }
-
-      if (ImGui::InputText("Buy Price", BuyPriceBuffer, IM_ARRAYSIZE(BuyPriceBuffer), ImGuiInputTextFlags_CharsDecimal | ImGuiInputTextFlags_CharsNoBlank))
-      {
-        char *endptr = nullptr;
-        long parsed_value = std::strtol(BuyPriceBuffer, &endptr, 10);
-        if (endptr != BuyPriceBuffer && *endptr == '\0' && parsed_value <= UINT32_MAX)
-        {
-          int value = static_cast<int>(parsed_value);
-          if (value > 0)
-          {
-            Item.BuyPrice = value;
-            BuyPriceError = false;
-          }
-          else
-            BuyPriceError = true;
-        }
-        else
-        {
-          BuyPriceError = true;
-        }
-      }
-
-      if (BuyPriceError)
-      {
-        ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
-        ImGui::Text("Invalid Value");
-        ImGui::PopStyleColor();
+        Item.BuyPrice = outBuyPrice;
       }
 
       ImGui::Separator();
+
+      bool HasItem = false;
 
       if (ImGui::BeginTable("Tracked Items", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
       {
@@ -107,6 +66,7 @@ void NewTrackerItemUI::Render()
         ItemData Data;
         if (Item.ItemID != 0 && FAddon->GetModules()->ItemData->RequestItemData(Item.ItemID, Data))
         {
+          HasItem = true;
           if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
           {
             ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
@@ -127,14 +87,17 @@ void NewTrackerItemUI::Render()
       {
         Visible = false;
       }
-      ImGui::SameLine();
-      if (ImGui::Button("Confirm"))
+      if (HasItem)
       {
-        if (!EditMode)
-          FAddon->GetModules()->Tracker->TrackItem(Item);
-        else
-          FAddon->GetModules()->Tracker->EditItem(EditIndex, Item);
-        Visible = false;
+        ImGui::SameLine();
+        if (ImGui::Button("Confirm"))
+        {
+          if (!EditMode)
+            FAddon->GetModules()->Tracker->TrackItem(Item);
+          else
+            FAddon->GetModules()->Tracker->EditItem(EditIndex, Item);
+          Visible = false;
+        }
       }
     }
     ImGui::End();
@@ -165,11 +128,12 @@ void NewTrackerItemUI::ShowEdit(const TrackedItem& item, int index)
 
 void NewTrackerItemUI::Init()
 {
+  Item.Quantity = std::max(Item.Quantity, 1u);
+  Item.BuyPrice = std::max(Item.BuyPrice, 1);
+
   std::snprintf(ItemIDBuffer, sizeof(ItemIDBuffer), "%u", Item.ItemID);
-  std::snprintf(QuantityBuffer, sizeof(QuantityBuffer), "%u", Item.Quantity);
-  std::snprintf(BuyPriceBuffer, sizeof(BuyPriceBuffer), "%u", Item.BuyPrice);
+  Quantity = Item.Quantity;
+  BuyPriceInputField.SetValue(Item.BuyPrice);
   ItemIDError = false;
-  QuantityError = false;
-  BuyPriceError = false;
   Visible = true;
 }

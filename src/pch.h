@@ -1,5 +1,5 @@
 #pragma once
-
+#define NOMINMAX
 #include <iostream>
 #include <vector>
 #include <map>
@@ -9,6 +9,7 @@
 #include <filesystem>
 #include <sstream>
 #include <chrono>
+#include <algorithm>
 #include "curl/curl.h"
 
 #include "../assets/resource.h"
@@ -32,6 +33,7 @@
 #include "Modules/CompletedTrackerModule.h"
 
 #include "UI/CurrencyDisplay.h"
+#include "UI/CurrencyInputField.h"
 #include "UI/TrackerUI.h"
 #include "UI/CompletedTrackerUI.h"
 #include "UI/TradingPostUI.h"

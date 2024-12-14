@@ -45,15 +45,21 @@ void ItemDataModule::TrySyncItems()
       nlohmann::json Json = nlohmann::json::parse(payload);
       for (const auto& item_json : Json)
       {
-        ItemData item = item_json.get<ItemData>();
-        Items[item.ID] = item;
+        try
+        {
+          ItemData item = item_json.get<ItemData>();
+          Items[item.ID] = item;
 
-        //request a texture
-        std::pair<std::string, std::string> splitURL = HTTPClient::SplitRemoteFromEndpoint(item.IconUrl);
-        FAddon->GetAPI()->LoadTextureFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
-
-        ProcessedIDs.clear();
+          //request a texture
+          std::pair<std::string, std::string> splitURL = HTTPClient::SplitRemoteFromEndpoint(item.IconUrl);
+          FAddon->GetAPI()->LoadTextureFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
+        }
+        catch (const nlohmann::json::exception& e)
+        {
+          FAddon->Log(WARNING, "Can not create ItemData: %s", e.what());
+        }
       }
+      ProcessedIDs.clear();
     }
     else
       FAddon->Log(WARNING, "Found empty ItemData payload");

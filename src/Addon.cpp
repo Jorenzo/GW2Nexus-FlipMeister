@@ -45,7 +45,8 @@ void Addon::AddonLoad(AddonAPI* aApi)
   APIDefs->LoadTextureFromResource(QUICKACCESS_HOVER, FM_QuickAccessHover, hSelf, nullptr);
   CurrencyDisplay::SetupResources(this);
 
-  APIDefs->AddShortcut(ADDON_SHORTCUT, QUICKACCESS, QUICKACCESS_HOVER, ADDON_VISIBILITY_KEYBIND, "");
+  if (FSettings->ShowQuickAccessIcon())
+    AddQuickAccessIcon();
 
   ModuleData M;
   M.Tracker = new TrackerModule(this);
@@ -67,7 +68,8 @@ void Addon::AddonLoad(AddonAPI* aApi)
 
 void Addon::AddonUnload()
 {
-  APIDefs->RemoveShortcut(ADDON_SHORTCUT);
+  if (FSettings->ShowQuickAccessIcon())
+    RemoveQuickAccessIcon();
 
   APIDefs->DeregisterKeybind(ADDON_VISIBILITY_KEYBIND);
 
@@ -165,4 +167,23 @@ void Addon::Log(ELogLevel LogType, const std::string Log, ...)
 
   // Pass the formatted string to the logging system
   APIDefs->Log(LogType, ADDON_LOG_NAME, logMessage.c_str());
+}
+
+void Addon::ShowQuickAccessIconChanged()
+{
+  bool show = FSettings->ShowQuickAccessIcon();
+  if (show)
+    AddQuickAccessIcon();
+  else
+    RemoveQuickAccessIcon();
+}
+
+void Addon::AddQuickAccessIcon()
+{
+  APIDefs->AddShortcut(ADDON_SHORTCUT, QUICKACCESS, QUICKACCESS_HOVER, ADDON_VISIBILITY_KEYBIND, "");
+}
+
+void Addon::RemoveQuickAccessIcon()
+{
+  APIDefs->RemoveShortcut(ADDON_SHORTCUT);
 }

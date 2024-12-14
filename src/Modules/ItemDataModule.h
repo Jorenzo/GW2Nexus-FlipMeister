@@ -10,8 +10,8 @@ struct ItemData
 inline void to_json(nlohmann::json& j, const ItemData& item) {
   j = nlohmann::json{
     { "id", item.ID },
-  { "name", item.Name },
-  { "icon", item.IconUrl },
+    { "name", item.Name },
+    { "icon", item.IconUrl },
   };
 }
 inline void from_json(const nlohmann::json& j, ItemData& item) {
