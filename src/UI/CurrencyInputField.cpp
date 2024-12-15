@@ -79,21 +79,11 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   outValue += Silver * 100;
   outValue += Gold * 10000;
 
-  if (outValue >= minValue)
-  {
-    if (InputThisFrame)
-      return true;
-  }
-  else
-    Error = true;
-  
+  if (outValue < minValue)
+    SetValue(minValue);
 
-  if (Error)
-  {
-    ImGui::PushStyleColor(ImGuiCol_Text, COL_RED);
-    ImGui::Text("Invalid Value");
-    ImGui::PopStyleColor();
-  }
+  if (InputThisFrame)
+    return true;
 
   return false;
 }

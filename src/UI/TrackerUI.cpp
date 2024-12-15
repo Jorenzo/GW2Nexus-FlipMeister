@@ -1,6 +1,7 @@
 #include "pch.h"
 
-TrackerUI::TrackerUI(Addon* addon)
+TrackerUI::TrackerUI(Addon* addon) :
+  UndercutInputField(addon)
 {
   FAddon = addon;
 }
@@ -14,6 +15,26 @@ void TrackerUI::Render()
   if (ImGui::Button("Add Item Manually", ImVec2(150, 20)))
   {
     FAddon->GetUI()->NewTrackerItem->Show();
+  }
+  ImGui::SameLine();
+
+  bool CalculateUndercut = FAddon->GetSettings()->TrackerCalculateUndercut();
+  int Undercut = FAddon->GetSettings()->TrackerUndercutValue();
+  if(Undercut != LastUndercut)
+    UndercutInputField.SetValue(Undercut);
+  LastUndercut = Undercut;
+
+  if (ImGui::Checkbox("Calculate Undercut", &CalculateUndercut))
+  {
+    FAddon->GetSettings()->SetTrackerCalculateUndercut(CalculateUndercut);
+  }
+  if (CalculateUndercut)
+  {
+    ImGui::SameLine();
+    if (UndercutInputField.Render(Undercut, 1, "Undercut value"))
+    {
+      FAddon->GetSettings()->SetTrackerUndercutValue(Undercut);
+    }
   }
 
   if (FAddon->GetModules()->ItemData->IsUpdatingItems())
@@ -29,7 +50,12 @@ void TrackerUI::Render()
     ImGui::Text("Fetching Prices...");
   }
 
-  if (ImGui::BeginTable("Tracked Items", 13, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+
+  unsigned int ColumnCount = 13;
+  if (CalculateUndercut)
+    ColumnCount++;
+
+  if (ImGui::BeginTable("Tracked Items", ColumnCount, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
   {
     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
     ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
@@ -37,6 +63,8 @@ void TrackerUI::Render()
     ImGui::TableSetupColumn("Total buy price", ImGuiTableColumnFlags_WidthFixed, 160);
     ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 10);
     ImGui::TableSetupColumn("Sell price", ImGuiTableColumnFlags_WidthFixed, 160);
+    if(CalculateUndercut)
+      ImGui::TableSetupColumn("Sell price w/ undercut", ImGuiTableColumnFlags_WidthFixed, 160);
     ImGui::TableSetupColumn("After Tax", ImGuiTableColumnFlags_WidthFixed, 160);
     ImGui::TableSetupColumn("Total After Tax", ImGuiTableColumnFlags_WidthFixed, 160);
     ImGui::TableSetupColumn("RoI%", ImGuiTableColumnFlags_WidthFixed, 50);
@@ -83,6 +111,15 @@ void TrackerUI::Render()
           CurrencyDisplay::Render(FAddon, SellPrice);
         }
         ImGui::TableNextColumn();
+        if (CalculateUndercut)
+        {
+          if (SellPrice != 0)
+          {
+            SellPrice -= Undercut;
+            CurrencyDisplay::Render(FAddon, SellPrice);
+          }
+          ImGui::TableNextColumn();
+        }
         if (SellPrice != 0)
         {
           int AfterTax = (int)((float)SellPrice * 0.85f);
@@ -134,6 +171,8 @@ void TrackerUI::Render()
           comp.Quantity = item.Quantity;
           comp.BuyPrice = item.BuyPrice;
           comp.SellPrice = FAddon->GetModules()->CommerceData->GetSellPrice(item.ItemID);
+          if (CalculateUndercut)
+            comp.SellPrice -= Undercut;
           FAddon->GetUI()->CompleteTrackedItem->Show(comp);
         }
         ImGui::PopID();
@@ -164,6 +203,8 @@ void TrackerUI::Render()
     ImGui::TableNextColumn();
     CurrencyDisplay::Render(FAddon, AllTotalBuyPrice);
     ImGui::TableNextColumn();
+    if(CalculateUndercut)
+      ImGui::TableNextColumn();
     ImGui::TableNextColumn();
     ImGui::TableNextColumn();
     ImGui::TableNextColumn();

@@ -9,6 +9,8 @@ struct SettingsData
   bool AutoUpdateTradingPost = true;
   int AutoUpdateTradingPostSeconds = 180;
   int AutoUpdatePriceWatchSeconds = 60;
+  bool TrackerCalculateUndercut = false;
+  int TrackerUndercutValue = 1;
 };
 inline void to_json(nlohmann::json& j, const SettingsData& data) 
 {
@@ -18,6 +20,8 @@ inline void to_json(nlohmann::json& j, const SettingsData& data)
     { "AutoUpdateTradingPost", data.AutoUpdateTradingPost },
     { "AutoUpdateTradingPostSeconds", data.AutoUpdateTradingPostSeconds },
     { "AutoUpdatePriceWatchSeconds", data.AutoUpdatePriceWatchSeconds },
+    { "TrackerCalculateUndercut", data.TrackerCalculateUndercut },
+    { "TrackerUndercutValue", data.TrackerUndercutValue },
   };
 }
 inline void from_json(const nlohmann::json& j, SettingsData& data) 
@@ -32,6 +36,10 @@ inline void from_json(const nlohmann::json& j, SettingsData& data)
     j.at("AutoUpdateTradingPostSeconds").get_to(data.AutoUpdateTradingPostSeconds);
   if (j.contains("AutoUpdatePriceWatchSeconds"))
     j.at("AutoUpdatePriceWatchSeconds").get_to(data.AutoUpdatePriceWatchSeconds);
+  if (j.contains("TrackerCalculateUndercut"))
+    j.at("TrackerCalculateUndercut").get_to(data.TrackerCalculateUndercut);
+  if (j.contains("TrackerUndercutValue"))
+    j.at("TrackerUndercutValue").get_to(data.TrackerUndercutValue);
 }
 
 struct AccountData
@@ -63,6 +71,10 @@ public:
   bool AutoUpdateTradingPost() const { return Data.AutoUpdateTradingPost; }
   int AutoUpdateTradingPostSeconds() const { return Data.AutoUpdateTradingPostSeconds; }
   int AutoUpdatePriceWatchSeconds() const { return Data.AutoUpdatePriceWatchSeconds; }
+  bool TrackerCalculateUndercut() const { return Data.TrackerCalculateUndercut; }
+  int TrackerUndercutValue() const { return Data.TrackerUndercutValue; }
+  void SetTrackerCalculateUndercut(bool value);
+  void SetTrackerUndercutValue(int value);
 private:
   void WriteSettings();
   void ReadSettings();
@@ -73,4 +85,5 @@ private:
   Addon* FAddon = nullptr;
   HTTPRequestHandle ConnectedAccountHandle = HTTPREQUEST_HANDLE_INVALID;
   char APIInputBuffer[128];
+  CurrencyInputField              TrackerUndercutInputField;
 };

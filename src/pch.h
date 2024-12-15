@@ -18,6 +18,11 @@
 //#include "mumble/Mumble.h"
 #include "imgui/imgui.h"
 
+class Addon;
+
+#include "UI/CurrencyDisplay.h"
+#include "UI/CurrencyInputField.h"
+
 #include "util/json.hpp"
 #include "util/HTTPClient.h"
 #include "util/Settings.h"
@@ -32,8 +37,6 @@
 #include "Modules/TrackerModule.h"
 #include "Modules/CompletedTrackerModule.h"
 
-#include "UI/CurrencyDisplay.h"
-#include "UI/CurrencyInputField.h"
 #include "UI/TrackerUI.h"
 #include "UI/CompletedTrackerUI.h"
 #include "UI/TradingPostUI.h"

@@ -1,6 +1,7 @@
 #include "pch.h"
 
-Settings::Settings(Addon* addon)
+Settings::Settings(Addon* addon) :
+  TrackerUndercutInputField(addon)
 {
   FAddon = addon;
 }
@@ -12,6 +13,8 @@ void Settings::Init()
   strncpy_s(APIInputBuffer, sizeof(APIInputBuffer), Data.APIKey.c_str(), _TRUNCATE);
   APIInputBuffer[sizeof(APIInputBuffer) - 1] = '\0';
   
+  TrackerUndercutInputField.SetValue(Data.TrackerUndercutValue);
+
   RequestConnectAccount();
 }
 
@@ -58,6 +61,23 @@ void Settings::Render()
   }
   if (ImGui::IsItemHovered())
     ImGui::SetTooltip("Time in seconds between each refresh of all the item prices");
+  ImGui::Separator();
+  ImGui::Text("Tracker");
+  ImGui::Separator();
+  if (ImGui::Checkbox("Calculate Undercut", &Data.TrackerCalculateUndercut))
+    SetTrackerCalculateUndercut(Data.TrackerCalculateUndercut);
+  if (ImGui::IsItemHovered())
+    ImGui::SetTooltip("When enabled, the tracker will have an undercut section which takes the amount of from the sell price");
+  if (Data.TrackerCalculateUndercut)
+  {
+    if (TrackerUndercutInputField.Render(Data.TrackerUndercutValue, 1, "Undercut value"))
+    {
+      FAddon->GetSettings()->SetTrackerUndercutValue(Data.TrackerUndercutValue);
+    }
+    if (ImGui::IsItemHovered())
+      ImGui::SetTooltip("The value of which the tracker will undercut the sell price");
+  }
+  ImGui::Separator();
   ImGui::Text("Trading Post");
   ImGui::Separator();
   if (ImGui::Checkbox("Auto Refresh Trading Post Transactions", &Data.AutoUpdateTradingPost))
@@ -71,7 +91,18 @@ void Settings::Render()
   }
   if (ImGui::IsItemHovered())
     ImGui::SetTooltip("Time in seconds between each refresh of the selected transactions tab in the trading post UI");
+}
 
+void Settings::SetTrackerCalculateUndercut(bool value)
+{
+  Data.TrackerCalculateUndercut = value;
+  WriteSettings();
+}
+
+void Settings::SetTrackerUndercutValue(int value)
+{
+  Data.TrackerUndercutValue = value;
+  WriteSettings();
 }
 
 void Settings::WriteSettings()
