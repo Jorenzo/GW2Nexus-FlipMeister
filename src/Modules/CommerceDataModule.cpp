@@ -6,7 +6,9 @@ CommerceDataModule::CommerceDataModule(Addon* addon) :
 {
   FAddon = addon;
   PullCurrentBuys();
+  PullCurrentSells();
   PullHistoryBuys();
+  PullHistorySells();
   PricesTimer.SetNow();
 }
 
@@ -24,9 +26,17 @@ void CommerceDataModule::Update()
   {
     TrySyncHistoryBuys();
   }
+  if (SyncHistorySellsHandle != HTTPREQUEST_HANDLE_INVALID)
+  {
+    TrySyncHistorySells();
+  }
   if (SyncCurrentBuysHandle != HTTPREQUEST_HANDLE_INVALID)
   {
     TrySyncCurrentBuys();
+  }
+  if (SyncCurrentSellsHandle != HTTPREQUEST_HANDLE_INVALID)
+  {
+    TrySyncCurrentSells();
   }
 }
 
@@ -38,12 +48,28 @@ void CommerceDataModule::PullCurrentBuys()
   SyncCurrentBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_BUYS);
 }
 
+void CommerceDataModule::PullCurrentSells()
+{
+  if (SyncCurrentSellsHandle != HTTPREQUEST_HANDLE_INVALID)
+    return;
+
+  SyncCurrentSellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_SELLS);
+}
+
 void CommerceDataModule::PullHistoryBuys()
 {
   if (SyncHistoryBuysHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
   SyncHistoryBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_BUYS);
+}
+
+void CommerceDataModule::PullHistorySells()
+{
+  if (SyncHistorySellsHandle != HTTPREQUEST_HANDLE_INVALID)
+    return;
+
+  SyncHistorySellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_SELLS);
 }
 
 void CommerceDataModule::TrySyncCurrentBuys()
@@ -82,6 +108,42 @@ void CommerceDataModule::TrySyncCurrentBuys()
   }
 }
 
+void CommerceDataModule::TrySyncCurrentSells()
+{
+  std::string payload = "";
+  if (GW2API::GetPayload(FAddon, SyncCurrentSellsHandle, payload))
+  {
+    if (!payload.empty())
+    {
+      CurrentSells.clear();
+
+      nlohmann::json Json = nlohmann::json::parse(payload);
+      std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
+
+      for (int i = 0; i < data.size(); i++)
+      {
+        TransactionData& transaction = data[i];
+        bool Merged = false;
+        for (int j = 0; j < CurrentSells.size(); j++)
+        {
+          TransactionData& savedTransaction = CurrentSells[j];
+          if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+          {
+            savedTransaction.Quantity += transaction.Quantity;
+            Merged = true;
+            break;
+          }
+        }
+
+        if (!Merged)
+          CurrentSells.push_back(transaction);
+      }
+    }
+
+    SyncCurrentSellsHandle = HTTPREQUEST_HANDLE_INVALID;
+  }
+}
+
 void CommerceDataModule::TrySyncHistoryBuys()
 {
   std::string payload = "";
@@ -114,6 +176,41 @@ void CommerceDataModule::TrySyncHistoryBuys()
     }
 
     SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+  }
+}
+
+void CommerceDataModule::TrySyncHistorySells()
+{
+  std::string payload = "";
+  if (GW2API::GetPayload(FAddon, SyncHistorySellsHandle, payload))
+  {
+    if (!payload.empty())
+    {
+      HistorySells.clear();
+
+      nlohmann::json Json = nlohmann::json::parse(payload);
+      std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
+      for (int i = 0; i < data.size(); i++)
+      {
+        TransactionData& transaction = data[i];
+        bool Merged = false;
+        for (int j = 0; j < HistorySells.size(); j++)
+        {
+          TransactionData& savedTransaction = HistorySells[j];
+          if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+          {
+            savedTransaction.Quantity += transaction.Quantity;
+            Merged = true;
+            break;
+          }
+        }
+
+        if (!Merged)
+          HistorySells.push_back(transaction);
+      }
+    }
+
+    SyncHistorySellsHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }
 

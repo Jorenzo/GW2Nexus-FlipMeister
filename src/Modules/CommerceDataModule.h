@@ -57,26 +57,38 @@ public:
   CommerceDataModule(Addon* addon);
   void                                    Update();
   const std::vector<TransactionData>*     GetCurrentBuys() const { return &CurrentBuys; }
+  const std::vector<TransactionData>*     GetCurrentSells() const { return &CurrentSells; }
   const std::vector<TransactionData>*     GetHistoryBuys() const { return &HistoryBuys; }
+  const std::vector<TransactionData>*     GetHistorySells() const { return &HistorySells; }
   int                                     GetSellPrice(unsigned int id);
   void                                    PullCurrentBuys();
+  void                                    PullCurrentSells();
   void                                    PullHistoryBuys();
+  void                                    PullHistorySells();
   bool                                    IsUpdatingPrices() const { return SyncPricesHandle != HTTPREQUEST_HANDLE_INVALID || NewItemsInPriceWatch; }
   bool                                    IsUpdatingCurrenBuys() const { return SyncCurrentBuysHandle != HTTPREQUEST_HANDLE_INVALID; }
+  bool                                    IsUpdatingCurrenSells() const { return SyncCurrentSellsHandle != HTTPREQUEST_HANDLE_INVALID; }
   bool                                    IsUpdatingHistoryBuys() const { return SyncHistoryBuysHandle != HTTPREQUEST_HANDLE_INVALID; }
+  bool                                    IsUpdatingHistorySells() const { return SyncHistorySellsHandle != HTTPREQUEST_HANDLE_INVALID; }
 private:
   void                                    RequestSyncPrices();
   void                                    TrySyncPrices();
   void                                    TrySyncCurrentBuys();
+  void                                    TrySyncCurrentSells();
   void                                    TrySyncHistoryBuys();
+  void                                    TrySyncHistorySells();
   std::vector<TransactionData>            CurrentBuys;
+  std::vector<TransactionData>            CurrentSells;
   std::vector<TransactionData>            HistoryBuys;
+  std::vector<TransactionData>            HistorySells;
   std::map<unsigned int, PriceData>       CurrentPrices;
   std::vector<unsigned int>               PriceWatch;
   Addon*                                  FAddon = nullptr;
   Timer                                   PricesTimer;
   HTTPRequestHandle                       SyncCurrentBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+  HTTPRequestHandle                       SyncCurrentSellsHandle = HTTPREQUEST_HANDLE_INVALID;
   HTTPRequestHandle                       SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+  HTTPRequestHandle                       SyncHistorySellsHandle = HTTPREQUEST_HANDLE_INVALID;
   HTTPRequestHandle                       SyncPricesHandle = HTTPREQUEST_HANDLE_INVALID;
   bool                                    NewItemsInPriceWatch = false;
 };
