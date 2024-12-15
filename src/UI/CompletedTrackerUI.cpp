@@ -20,6 +20,15 @@ void CompletedTrackerUI::Render()
       {
         FAddon->GetUI()->CompleteTrackedItem->Show();
       }
+
+      if (FAddon->GetModules()->ItemData->IsUpdatingItems())
+      {
+        ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
+        ImGui::SetNextItemWidth(150.0f);
+        ImGui::Text("Fetching Items...");
+      }
+
+
       if (ImGui::BeginTable("Completed Items", 12, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
       {
         ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
