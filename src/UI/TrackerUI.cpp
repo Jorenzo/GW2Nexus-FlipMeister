@@ -9,8 +9,8 @@ TrackerUI::TrackerUI(Addon* addon) :
 void TrackerUI::Render()
 {
   ImGui::Separator();
-  ImGui::Separator();
-  ImGui::Text("Tracker");
+  //ImGui::Separator();
+  //ImGui::Text("Tracker");
   ImGui::Separator();
   if (ImGui::Button("Add Item Manually", ImVec2(150, 20)))
   {

@@ -31,9 +31,9 @@ extern "C" __declspec(dllexport) AddonDefinition* GetAddonDef()
   AddonDef.Version.Major = 1;
   AddonDef.Version.Minor = 0;
   AddonDef.Version.Build = 0;
-  AddonDef.Version.Revision = 1;
+  AddonDef.Version.Revision = 0;
   AddonDef.Author = "Joren.4310";
-  AddonDef.Description = "Utility for tracking purchases from the trading post. Evon Gnashblade approved!";
+  AddonDef.Description = "Track investments from the trading post. Evon Gnashblade approved!";
   AddonDef.Load = AddonLoad;
   AddonDef.Unload = AddonUnload;
   AddonDef.Flags = EAddonFlags_None;
