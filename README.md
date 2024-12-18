@@ -1,5 +1,6 @@
 # GW2Nexus-FlipMeister
 ![Logo](./assets/FlipMeisterLogo.png)
+
 Guild Wars 2 Addon that tracks investments bought from the trading post. Developed for [Nexus](https://raidcore.gg/Nexus)
 
 ## Features
