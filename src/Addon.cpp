@@ -105,7 +105,7 @@ void Addon::AddonRender()
       Texture* LogoTexture = APIDefs->GetTexture(LOGO);
       if (LogoTexture)
       {
-        float scale = 0.35f;
+        float scale = 1.0f;
         ImVec2 imageSize = ImVec2(((float)LogoTexture->Width) * scale, ((float)LogoTexture->Height) * scale);
         float contentRegionWidth = ImGui::GetContentRegionAvail().x;
         float xPos = (contentRegionWidth - imageSize.x) * 0.5f;
