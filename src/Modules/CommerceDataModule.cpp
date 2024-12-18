@@ -9,6 +9,7 @@ CommerceDataModule::CommerceDataModule(Addon* addon) :
   PullCurrentSells();
   PullHistoryBuys();
   PullHistorySells();
+  PullDelivery();
   PricesTimer.SetNow();
 }
 
@@ -37,6 +38,10 @@ void CommerceDataModule::Update()
   if (SyncCurrentSellsHandle != HTTPREQUEST_HANDLE_INVALID)
   {
     TrySyncCurrentSells();
+  }  
+  if (SyncDeliveryHandle != HTTPREQUEST_HANDLE_INVALID)
+  {
+    TrySyncDelivery();
   }
 }
 
@@ -72,6 +77,14 @@ void CommerceDataModule::PullHistorySells()
   SyncHistorySellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_SELLS);
 }
 
+void CommerceDataModule::PullDelivery()
+{
+  if (SyncDeliveryHandle != HTTPREQUEST_HANDLE_INVALID)
+    return;
+
+  SyncDeliveryHandle = GW2API::Request(FAddon, API_COMMERCE_DELIVERY);
+}
+
 void CommerceDataModule::TrySyncCurrentBuys()
 {
   std::string payload = "";
@@ -81,26 +94,33 @@ void CommerceDataModule::TrySyncCurrentBuys()
     {
       CurrentBuys.clear();
 
-      nlohmann::json Json = nlohmann::json::parse(payload);
-      std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
-
-      for (int i = 0; i < data.size(); i++)
+      try
       {
-        TransactionData& transaction = data[i];
-        bool Merged = false;
-        for (int j = 0; j < CurrentBuys.size(); j++)
-        {
-          TransactionData& savedTransaction = CurrentBuys[j];
-          if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
-          {
-            savedTransaction.Quantity += transaction.Quantity;
-            Merged = true;
-            break;
-          }
-        }
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
 
-        if (!Merged)
-          CurrentBuys.push_back(transaction);
+        for (int i = 0; i < data.size(); i++)
+        {
+          TransactionData& transaction = data[i];
+          bool Merged = false;
+          for (int j = 0; j < CurrentBuys.size(); j++)
+          {
+            TransactionData& savedTransaction = CurrentBuys[j];
+            if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+            {
+              savedTransaction.Quantity += transaction.Quantity;
+              Merged = true;
+              break;
+            }
+          }
+
+          if (!Merged)
+            CurrentBuys.push_back(transaction);
+        }
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Can not create TransactionData - Current Buys: %s", payload.c_str());
       }
     }
 
@@ -117,26 +137,33 @@ void CommerceDataModule::TrySyncCurrentSells()
     {
       CurrentSells.clear();
 
-      nlohmann::json Json = nlohmann::json::parse(payload);
-      std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
-
-      for (int i = 0; i < data.size(); i++)
+      try
       {
-        TransactionData& transaction = data[i];
-        bool Merged = false;
-        for (int j = 0; j < CurrentSells.size(); j++)
-        {
-          TransactionData& savedTransaction = CurrentSells[j];
-          if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
-          {
-            savedTransaction.Quantity += transaction.Quantity;
-            Merged = true;
-            break;
-          }
-        }
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
 
-        if (!Merged)
-          CurrentSells.push_back(transaction);
+        for (int i = 0; i < data.size(); i++)
+        {
+          TransactionData& transaction = data[i];
+          bool Merged = false;
+          for (int j = 0; j < CurrentSells.size(); j++)
+          {
+            TransactionData& savedTransaction = CurrentSells[j];
+            if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+            {
+              savedTransaction.Quantity += transaction.Quantity;
+              Merged = true;
+              break;
+            }
+          }
+
+          if (!Merged)
+            CurrentSells.push_back(transaction);
+        }
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Can not create TransactionData - Current Sells: %s", payload.c_str());
       }
     }
 
@@ -153,25 +180,32 @@ void CommerceDataModule::TrySyncHistoryBuys()
     {
       HistoryBuys.clear();
 
-      nlohmann::json Json = nlohmann::json::parse(payload);
-      std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
-      for (int i = 0; i < data.size(); i++)
+      try
       {
-        TransactionData& transaction = data[i];
-        bool Merged = false;
-        for (int j = 0; j < HistoryBuys.size(); j++)
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
+        for (int i = 0; i < data.size(); i++)
         {
-          TransactionData& savedTransaction = HistoryBuys[j];
-          if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+          TransactionData& transaction = data[i];
+          bool Merged = false;
+          for (int j = 0; j < HistoryBuys.size(); j++)
           {
-            savedTransaction.Quantity += transaction.Quantity;
-            Merged = true;
-            break;
+            TransactionData& savedTransaction = HistoryBuys[j];
+            if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+            {
+              savedTransaction.Quantity += transaction.Quantity;
+              Merged = true;
+              break;
+            }
           }
-        }
 
-        if (!Merged)
-          HistoryBuys.push_back(transaction);
+          if (!Merged)
+            HistoryBuys.push_back(transaction);
+        }
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Can not create TransactionData - History Buys: %s", payload.c_str());
       }
     }
 
@@ -188,25 +222,32 @@ void CommerceDataModule::TrySyncHistorySells()
     {
       HistorySells.clear();
 
-      nlohmann::json Json = nlohmann::json::parse(payload);
-      std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
-      for (int i = 0; i < data.size(); i++)
+      try
       {
-        TransactionData& transaction = data[i];
-        bool Merged = false;
-        for (int j = 0; j < HistorySells.size(); j++)
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
+        for (int i = 0; i < data.size(); i++)
         {
-          TransactionData& savedTransaction = HistorySells[j];
-          if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+          TransactionData& transaction = data[i];
+          bool Merged = false;
+          for (int j = 0; j < HistorySells.size(); j++)
           {
-            savedTransaction.Quantity += transaction.Quantity;
-            Merged = true;
-            break;
+            TransactionData& savedTransaction = HistorySells[j];
+            if (savedTransaction.ItemID == transaction.ItemID && savedTransaction.Price == transaction.Price)
+            {
+              savedTransaction.Quantity += transaction.Quantity;
+              Merged = true;
+              break;
+            }
           }
-        }
 
-        if (!Merged)
-          HistorySells.push_back(transaction);
+          if (!Merged)
+            HistorySells.push_back(transaction);
+        }
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Can not create TransactionData - History Sells: %s", payload.c_str());
       }
     }
 
@@ -238,11 +279,18 @@ void CommerceDataModule::TrySyncPrices()
   {
     if (!payload.empty())
     {
-      nlohmann::json Json = nlohmann::json::parse(payload);
-      for (const auto& item_json : Json)
+      try
       {
-        PriceData price = item_json.get<PriceData>();
-        CurrentPrices[price.ItemID] = price;
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        for (const auto& item_json : Json)
+        {
+          PriceData price = item_json.get<PriceData>();
+          CurrentPrices[price.ItemID] = price;
+        }
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Can not create PriceData: %s", payload.c_str());
       }
 
     }
@@ -266,5 +314,27 @@ void CommerceDataModule::RequestSyncPrices()
 
     SyncPricesHandle = GW2API::Request(FAddon, API_COMMERCE_PRICES, ids);
     NewItemsInPriceWatch = false;
+  }
+}
+
+void CommerceDataModule::TrySyncDelivery()
+{
+  std::string payload = "";
+  if (GW2API::GetPayload(FAddon, SyncDeliveryHandle, payload))
+  {
+    if (!payload.empty())
+    {
+      try
+      {
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        Delivery = Json.get<DeliveryData>();
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Can not create DeliveryData: %s", payload.c_str());
+      }
+    }
+
+    SyncDeliveryHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }

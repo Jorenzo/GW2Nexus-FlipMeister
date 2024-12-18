@@ -146,6 +146,77 @@ void TradingPostUI::Render()
           ImGui::EndTabItem();
         }
 
+        if (ImGui::BeginTabItem("Pickup"))
+        {
+          if (AutoUpdate && DeliveryRefreshTimer.GetSecondsPassed() > AutoUpdateTime)
+          {
+            FAddon->GetModules()->CommerceData->PullDelivery();
+            DeliveryRefreshTimer.SetNow();
+          }
+
+          if (ImGui::Button("Refresh"))
+          {
+            FAddon->GetModules()->CommerceData->PullDelivery();
+            DeliveryRefreshTimer.SetNow();
+          }
+          if (FAddon->GetModules()->CommerceData->IsUpdatingDelivery())
+          {
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
+            ImGui::SetNextItemWidth(180.0f);
+            ImGui::Text("Fetching Delivery...");
+          }
+          else if (FAddon->GetModules()->ItemData->IsUpdatingItems())
+          {
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
+            ImGui::SetNextItemWidth(180.0f);
+            ImGui::Text("Fetching Items...");
+          }
+
+          ImGui::Text("Pickup: ");
+          ImGui::SameLine();
+          CurrencyDisplay::Render(FAddon, FAddon->GetModules()->CommerceData->GetDeliveryData()->Coins);
+
+          if (ImGui::BeginTable("Items", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+          {
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
+            ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
+            ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultHide, 50);
+            ImGui::TableHeadersRow();
+
+            unsigned int counter = 0;
+            for (const DeliveryItemData& item : FAddon->GetModules()->CommerceData->GetDeliveryData()->Items)
+            {
+              counter++;
+              ItemData Data;
+              if (FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
+              {
+                ImGui::TableNextRow();
+                ImGui::TableNextColumn();
+                if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
+                {
+                  ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+                  ImGui::SameLine();
+                }
+                ImGui::Text(Data.Name.c_str());
+                ImGui::TableNextColumn();
+                ImGui::Text("%i", item.Quantity);
+                ImGui::TableNextColumn();
+                ImGui::PushID(counter);
+                if (ImGui::Button("Track"))
+                {
+                  TrackedItem trackedItem;
+                  trackedItem.ItemID = item.ItemID;
+                  trackedItem.BuyPrice = 1;
+                  trackedItem.Quantity = item.Quantity;
+                  FAddon->GetUI()->NewTrackerItem->Show(trackedItem);
+                }
+                ImGui::PopID();
+              }
+            }
+            ImGui::EndTable();
+          }
+          ImGui::EndTabItem();
+        }
         // End the tab bar
         ImGui::EndTabBar();
       }

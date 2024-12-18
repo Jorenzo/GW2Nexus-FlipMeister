@@ -13,6 +13,7 @@ struct APIEndPointDefinition
 #define API_COMMERCE_TRANSACTIONS_CURRENT_SELLS APIEndPointDefinition("commerce/transactions/current/sells", true)
 #define API_COMMERCE_TRANSACTIONS_HISTORY_BUYS APIEndPointDefinition("commerce/transactions/history/buys", true)
 #define API_COMMERCE_TRANSACTIONS_HISTORY_SELLS APIEndPointDefinition("commerce/transactions/history/sells", true)
+#define API_COMMERCE_DELIVERY APIEndPointDefinition("commerce/delivery", true)
 #define API_COMMERCE_PRICES APIEndPointDefinition("commerce/prices", false)
 #define API_ACCOUNT APIEndPointDefinition("account", true)
 #define API_ITEMS APIEndPointDefinition("items", false)

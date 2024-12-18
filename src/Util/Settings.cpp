@@ -115,14 +115,17 @@ void Settings::WriteSettings()
   std::filesystem::path dirPath = std::filesystem::path(path).parent_path();
 
   // Check if the directory exists, and create it if it doesn't
-  if (!std::filesystem::exists(dirPath)) {
-    if (!std::filesystem::create_directories(dirPath)) {
+  if (!std::filesystem::exists(dirPath)) 
+  {
+    if (!std::filesystem::create_directories(dirPath)) 
+    {
       FAddon->Log(WARNING, "Failed to write settings file at '%s'", path.c_str());
     }
   }
 
 
-  try {
+  try 
+  {
     std::ofstream outFile(path);
     if (!outFile.is_open()) {
       throw std::ios_base::failure("Failed to open file");
@@ -141,7 +144,8 @@ void Settings::ReadSettings()
   path += "\\settings.json";
   std::ifstream inFile(path);
 
-  if (!inFile) {
+  if (!inFile) 
+  {
     FAddon->Log(WARNING, "Failed to open settings file at '%s'", path.c_str());
     return;
   }
@@ -151,7 +155,8 @@ void Settings::ReadSettings()
   {
     inFile >> jsonObject;
   }
-  catch (const nlohmann::json::parse_error& e) {
+  catch (const nlohmann::json::parse_error& e) 
+  {
     FAddon->Log(WARNING, "Failed to parse JSON in settings file '%s'\n %s", path.c_str(), e.what());
     return;
   }
@@ -162,7 +167,8 @@ void Settings::ReadSettings()
   {
     Data = jsonObject.get<SettingsData>();
   }
-  catch (const nlohmann::json::type_error& e) {
+  catch (const nlohmann::json::type_error& e) 
+  {
     FAddon->Log(WARNING, "JSON structure mismatch in settings file '%s'\n %s", path.c_str(), e.what());
     return;
   }
@@ -184,9 +190,16 @@ void Settings::TryConnectAccount()
   {
     if (!payload.empty())
     {
-      nlohmann::json Json = nlohmann::json::parse(payload);
-      AccountData data = Json.get<AccountData>();
-      ConnectedAccount = data.Name;
+      try
+      {
+        nlohmann::json Json = nlohmann::json::parse(payload);
+        AccountData data = Json.get<AccountData>();
+        ConnectedAccount = data.Name;
+      }
+      catch (const nlohmann::json::exception&)
+      {
+        FAddon->Log(WARNING, "Failed to parse AccountData: %s", payload.c_str());
+      }
     }
     else
       FAddon->Log(WARNING, "No payload when trying to connect account! Provided key: %s", Data.APIKey.c_str());

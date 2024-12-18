@@ -22,4 +22,5 @@ private:
   Timer                       SellingRefreshTimer;
   Timer                       BoughtRefreshTimer;
   Timer                       SoldRefreshTimer;
+  Timer                       DeliveryRefreshTimer;
 };
