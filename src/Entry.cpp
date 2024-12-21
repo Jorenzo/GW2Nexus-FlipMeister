@@ -30,7 +30,7 @@ extern "C" __declspec(dllexport) AddonDefinition* GetAddonDef()
   AddonDef.Name = ADDON_NAME;
   AddonDef.Version.Major = 1;
   AddonDef.Version.Minor = 0;
-  AddonDef.Version.Build = 0;
+  AddonDef.Version.Build = 1;
   AddonDef.Version.Revision = 0;
   AddonDef.Author = "Joren.4310";
   AddonDef.Description = "Track investments from the trading post. Evon Gnashblade approved!";
