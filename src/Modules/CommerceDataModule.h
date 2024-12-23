@@ -56,9 +56,12 @@ inline void to_json(nlohmann::json& j, const TransactionData& transaction)
 }
 inline void from_json(const nlohmann::json& j, TransactionData& transaction) 
 {
-  j.at("item_id").get_to(transaction.ItemID);
-  j.at("price").get_to(transaction.Price);
-  j.at("quantity").get_to(transaction.Quantity);
+  if(j.contains("item_id"))
+    j.at("item_id").get_to(transaction.ItemID);
+  if(j.contains("price"))
+    j.at("price").get_to(transaction.Price);
+  if(j.contains("quantity"))
+    j.at("quantity").get_to(transaction.Quantity);
 }
 
 struct PriceObject
@@ -147,4 +150,8 @@ private:
   HTTPRequestHandle                       SyncPricesHandle = HTTPREQUEST_HANDLE_INVALID;
   HTTPRequestHandle                       SyncDeliveryHandle = HTTPREQUEST_HANDLE_INVALID;
   bool                                    NewItemsInPriceWatch = false;
+  unsigned int                            SyncHistoryBuysPageIndex = 0;
+  unsigned int                            SyncHistorySellsPageIndex = 0;
+  unsigned int                            SyncCurrentBuysPageIndex = 0;
+  unsigned int                            SyncCurrentSellsPageIndex = 0;
 };

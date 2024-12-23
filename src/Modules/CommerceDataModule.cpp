@@ -1,5 +1,6 @@
 #include "pch.h"
 
+const int PageSize = 200;
 
 CommerceDataModule::CommerceDataModule(Addon* addon) :
   PricesTimer()
@@ -45,12 +46,19 @@ void CommerceDataModule::Update()
   }
 }
 
+std::string GetPageRequest(int page)
+{
+  std::ostringstream oss;
+  oss << "&page_size=" << PageSize << "&page=" << page;
+  return oss.str();
+}
+
 void CommerceDataModule::PullCurrentBuys()
 {
   if (SyncCurrentBuysHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
-  SyncCurrentBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_BUYS);
+  SyncCurrentBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_BUYS, GetPageRequest(SyncCurrentBuysPageIndex));
 }
 
 void CommerceDataModule::PullCurrentSells()
@@ -58,7 +66,7 @@ void CommerceDataModule::PullCurrentSells()
   if (SyncCurrentSellsHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
-  SyncCurrentSellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_SELLS);
+  SyncCurrentSellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_CURRENT_SELLS, GetPageRequest(SyncCurrentSellsPageIndex));
 }
 
 void CommerceDataModule::PullHistoryBuys()
@@ -66,7 +74,7 @@ void CommerceDataModule::PullHistoryBuys()
   if (SyncHistoryBuysHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
-  SyncHistoryBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_BUYS);
+  SyncHistoryBuysHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_BUYS, GetPageRequest(SyncHistoryBuysPageIndex));
 }
 
 void CommerceDataModule::PullHistorySells()
@@ -74,7 +82,7 @@ void CommerceDataModule::PullHistorySells()
   if (SyncHistorySellsHandle != HTTPREQUEST_HANDLE_INVALID)
     return;
 
-  SyncHistorySellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_SELLS);
+  SyncHistorySellsHandle = GW2API::Request(FAddon, API_COMMERCE_TRANSACTIONS_HISTORY_SELLS, GetPageRequest(SyncHistorySellsPageIndex));
 }
 
 void CommerceDataModule::PullDelivery()
@@ -92,7 +100,8 @@ void CommerceDataModule::TrySyncCurrentBuys()
   {
     if (!payload.empty())
     {
-      CurrentBuys.clear();
+      if (SyncCurrentBuysPageIndex == 0)
+        CurrentBuys.clear();
 
       try
       {
@@ -117,6 +126,14 @@ void CommerceDataModule::TrySyncCurrentBuys()
           if (!Merged)
             CurrentBuys.push_back(transaction);
         }
+
+        if (data.size() == PageSize)
+        {
+          SyncCurrentBuysPageIndex++;
+          SyncCurrentBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+          PullCurrentBuys();
+          return;
+        }
       }
       catch (const nlohmann::json::exception&)
       {
@@ -124,6 +141,7 @@ void CommerceDataModule::TrySyncCurrentBuys()
       }
     }
 
+    SyncCurrentBuysPageIndex = 0;
     SyncCurrentBuysHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }
@@ -135,7 +153,8 @@ void CommerceDataModule::TrySyncCurrentSells()
   {
     if (!payload.empty())
     {
-      CurrentSells.clear();
+      if (SyncCurrentSellsPageIndex == 0)
+        CurrentSells.clear();
 
       try
       {
@@ -160,6 +179,14 @@ void CommerceDataModule::TrySyncCurrentSells()
           if (!Merged)
             CurrentSells.push_back(transaction);
         }
+
+        if (data.size() == PageSize)
+        {
+          SyncCurrentSellsPageIndex++;
+          SyncCurrentSellsHandle = HTTPREQUEST_HANDLE_INVALID;
+          PullCurrentSells();
+          return;
+        }
       }
       catch (const nlohmann::json::exception&)
       {
@@ -167,6 +194,7 @@ void CommerceDataModule::TrySyncCurrentSells()
       }
     }
 
+    SyncCurrentSellsPageIndex = 0;
     SyncCurrentSellsHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }
@@ -178,11 +206,13 @@ void CommerceDataModule::TrySyncHistoryBuys()
   {
     if (!payload.empty())
     {
-      HistoryBuys.clear();
+      if(SyncHistoryBuysPageIndex == 0)
+        HistoryBuys.clear();
 
       try
       {
         nlohmann::json Json = nlohmann::json::parse(payload);
+
         std::vector<TransactionData> data = Json.get<std::vector<TransactionData>>();
         for (int i = 0; i < data.size(); i++)
         {
@@ -202,6 +232,14 @@ void CommerceDataModule::TrySyncHistoryBuys()
           if (!Merged)
             HistoryBuys.push_back(transaction);
         }
+
+        if (data.size() == PageSize)
+        {
+          SyncHistoryBuysPageIndex++;
+          SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;
+          PullHistoryBuys();
+          return;
+        }
       }
       catch (const nlohmann::json::exception&)
       {
@@ -209,6 +247,7 @@ void CommerceDataModule::TrySyncHistoryBuys()
       }
     }
 
+    SyncHistoryBuysPageIndex = 0;
     SyncHistoryBuysHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }
@@ -220,7 +259,8 @@ void CommerceDataModule::TrySyncHistorySells()
   {
     if (!payload.empty())
     {
-      HistorySells.clear();
+      if (SyncHistorySellsPageIndex == 0)
+        HistorySells.clear();
 
       try
       {
@@ -244,6 +284,14 @@ void CommerceDataModule::TrySyncHistorySells()
           if (!Merged)
             HistorySells.push_back(transaction);
         }
+
+        if (data.size() == PageSize)
+        {
+          SyncHistorySellsPageIndex++;
+          SyncHistorySellsHandle = HTTPREQUEST_HANDLE_INVALID;
+          PullHistorySells();
+          return;
+        }
       }
       catch (const nlohmann::json::exception&)
       {
@@ -251,6 +299,7 @@ void CommerceDataModule::TrySyncHistorySells()
       }
     }
 
+    SyncHistorySellsPageIndex = 0;
     SyncHistorySellsHandle = HTTPREQUEST_HANDLE_INVALID;
   }
 }

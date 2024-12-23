@@ -27,6 +27,7 @@ HTTPRequestHandle GW2API::Request(Addon* addon, const APIEndPointDefinition& End
     {
       FullRequest += ExtraData;
     }
+    //addon->Log(DEBUG, "Requesting: %s", FullRequest.c_str());
 
     return addon->GetHTTPClient()->QueueRequest(FullRequest);
   }

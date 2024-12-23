@@ -10,7 +10,8 @@ HTTPClient::HTTPClient(Addon* addon)
 
 HTTPClient::~HTTPClient()
 {
-  for (auto&[handle, data] : requests) {
+  for (auto&[handle, data] : requests) 
+  {
     curl_multi_remove_handle(multi_handle, data.easy_handle);
     curl_easy_cleanup(data.easy_handle);
   }
@@ -69,6 +70,7 @@ bool HTTPClient::IsRequestDone(HTTPRequestHandle handle)
   if (it == requests.end()) 
   {
     FAddon->Log(CRITICAL, "HTTPClient::IsRequestDone: Invalid Handle %i", handle);
+    return false;
   }
 
   return it->second.is_done;
@@ -80,11 +82,13 @@ std::string HTTPClient::GetResponse(HTTPRequestHandle handle)
   if (it == requests.end()) 
   {
     FAddon->Log(CRITICAL, "HTTPClient::GetResponse: Invalid Handle %i", handle);
+    return "";
   }
 
   if (!it->second.is_done) 
   {
     FAddon->Log(CRITICAL, "HTTPClient::GetResponse: Request not yet complete! Are you checking if its done?");
+    return "";
   }
 
   return *(it->second.response_data);
@@ -96,6 +100,7 @@ void HTTPClient::CleanupRequest(HTTPRequestHandle handle)
   if (it == requests.end()) 
   {
     FAddon->Log(CRITICAL, "HTTPClient::CleanupRequest: Invalid Handle %i", handle);
+    return;
   }
 
   curl_multi_remove_handle(multi_handle, it->second.easy_handle);
@@ -117,7 +122,8 @@ std::pair<std::string, std::string> HTTPClient::SplitRemoteFromEndpoint(const st
   size_t start = (protocolEnd != std::string::npos) ? protocolEnd + 3 : 0; // Skip "://" if present
 
   size_t pathStart = endpoint.find('/', start); // Find where the path starts
-  if (pathStart == std::string::npos) {
+  if (pathStart == std::string::npos)
+  {
     // No path found, assume the entire remaining string is the remote
     return { endpoint.substr(start), "" };
   }
