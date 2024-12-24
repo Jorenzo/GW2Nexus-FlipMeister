@@ -22,7 +22,7 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   ImGui::PushStyleColor(ImGuiCol_Text, COL_GOLD);
   std::string id0 = text + "0";
   ImGui::PushID(id0.c_str());
-  ImGui::SetNextItemWidth(80.0f);
+  ImGui::SetNextItemWidth(80.0f * GetScaleRatio());
   if (ImGui::InputInt("", &Gold))
   {
     InputThisFrame = true;
@@ -33,13 +33,13 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   if (Texture* tex = FAddon->GetAPI()->GetTexture(TEX_GOLD))
   {
     ImGui::SameLine();
-    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
   }
   ImGui::SameLine();
   ImGui::PushStyleColor(ImGuiCol_Text, COL_SILVER);
   std::string id1 = text + "1";
   ImGui::PushID(id1.c_str());
-  ImGui::SetNextItemWidth(80.0f);
+  ImGui::SetNextItemWidth(80.0f * GetScaleRatio());
   if (ImGui::InputInt("", &Silver))
   {
     Silver = std::clamp(Silver, 0, 99);
@@ -50,13 +50,13 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   if (Texture* tex = FAddon->GetAPI()->GetTexture(TEX_SILVER))
   {
     ImGui::SameLine();
-    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
   }
   ImGui::SameLine();
   ImGui::PushStyleColor(ImGuiCol_Text, COL_COPPER);
   std::string id2 = text + "2";
   ImGui::PushID(id2.c_str());
-  ImGui::SetNextItemWidth(80.0f);
+  ImGui::SetNextItemWidth(80.0f * GetScaleRatio());
   if (ImGui::InputInt("", &Copper))
   {
     Copper = std::clamp(Copper, 0, 99);
@@ -67,7 +67,7 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   if (Texture* tex = FAddon->GetAPI()->GetTexture(TEX_COPPER))
   {
     ImGui::SameLine();
-    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
   }
 
   ImGui::SameLine();

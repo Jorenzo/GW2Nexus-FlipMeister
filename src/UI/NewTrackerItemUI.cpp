@@ -32,8 +32,8 @@ void NewTrackerItemUI::Render()
 
       if (FAddon->GetModules()->ItemData->IsUpdatingItems())
       {
-        ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
-        ImGui::SetNextItemWidth(150.0f);
+        ImGui::SameLine(ImGui::GetContentRegionAvail().x - (150.0f * GetScaleRatio()));
+        ImGui::SetNextItemWidth(150.0f * GetScaleRatio());
         ImGui::Text("Fetching Items...");
       }
 
@@ -62,10 +62,10 @@ void NewTrackerItemUI::Render()
 
       if (ImGui::BeginTable("Tracked Items", 6, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
       {
-        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
-        ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
-        ImGui::TableSetupColumn("Buy price", ImGuiTableColumnFlags_WidthFixed, 160);
-        ImGui::TableSetupColumn("Total buy price", ImGuiTableColumnFlags_WidthFixed, 160);
+        ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350 * GetScaleRatio());
+        ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70 * GetScaleRatio());
+        ImGui::TableSetupColumn("Buy price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+        ImGui::TableSetupColumn("Total buy price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
         ImGui::TableHeadersRow();
 
         ImGui::TableNextRow();
@@ -76,7 +76,7 @@ void NewTrackerItemUI::Render()
           HasItem = true;
           if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
           {
-            ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+            ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
             ImGui::SameLine();
           }
           ImGui::Text(Data.Name.c_str());

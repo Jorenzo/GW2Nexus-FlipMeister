@@ -105,7 +105,7 @@ void Addon::AddonRender()
       Texture* LogoTexture = APIDefs->GetTexture(LOGO);
       if (LogoTexture)
       {
-        float scale = 1.0f;
+        float scale = 0.8f * GetScaleRatio();
         ImVec2 imageSize = ImVec2(((float)LogoTexture->Width) * scale, ((float)LogoTexture->Height) * scale);
         float contentRegionWidth = ImGui::GetContentRegionAvail().x;
         float xPos = (contentRegionWidth - imageSize.x) * 0.5f;
@@ -116,12 +116,12 @@ void Addon::AddonRender()
       ImGui::Separator();
       ImGui::Separator();
 
-      if (ImGui::Button("Open Trading Post Transactions", ImVec2(250, 30)))
+      if (ImGui::Button("Open Trading Post Transactions", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
       {
         UI.TradingPost->Open();
       }
       ImGui::SameLine();
-      if (ImGui::Button("Open Completed Tracked Items", ImVec2(250, 30)))
+      if (ImGui::Button("Open Completed Tracked Items", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
       {
         UI.CompletedTracker->Open();
       }

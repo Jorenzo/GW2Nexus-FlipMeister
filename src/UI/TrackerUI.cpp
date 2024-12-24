@@ -12,7 +12,7 @@ void TrackerUI::Render()
   //ImGui::Separator();
   //ImGui::Text("Tracker");
   ImGui::Separator();
-  if (ImGui::Button("Add Item Manually", ImVec2(150, 20)))
+  if (ImGui::Button("Add Item Manually", ImVec2(150 * GetScaleRatio(), 20 * GetScaleRatio())))
   {
     FAddon->GetUI()->NewTrackerItem->Show();
   }
@@ -39,14 +39,14 @@ void TrackerUI::Render()
 
   if (FAddon->GetModules()->ItemData->IsUpdatingItems())
   {
-    ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
-    ImGui::SetNextItemWidth(150.0f);
+    ImGui::SameLine(ImGui::GetContentRegionAvail().x - (150.0f * GetScaleRatio()));
+    ImGui::SetNextItemWidth(150.0f * GetScaleRatio());
     ImGui::Text("Fetching Items...");
   }
   else if (FAddon->GetModules()->CommerceData->IsUpdatingPrices())
   {
-    ImGui::SameLine(ImGui::GetContentRegionAvail().x - 150.0f);
-    ImGui::SetNextItemWidth(150.0f);
+    ImGui::SameLine(ImGui::GetContentRegionAvail().x - (150.0f * GetScaleRatio()));
+    ImGui::SetNextItemWidth(150.0f * GetScaleRatio());
     ImGui::Text("Fetching Prices...");
   }
 
@@ -57,21 +57,21 @@ void TrackerUI::Render()
 
   if (ImGui::BeginTable("Tracked Items", ColumnCount, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
   {
-    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
-    ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
-    ImGui::TableSetupColumn("Buy price", ImGuiTableColumnFlags_WidthFixed, 160);
-    ImGui::TableSetupColumn("Total buy price", ImGuiTableColumnFlags_WidthFixed, 160);
-    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 10);
-    ImGui::TableSetupColumn("Sell price", ImGuiTableColumnFlags_WidthFixed, 160);
+    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350 * GetScaleRatio());
+    ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70 * GetScaleRatio());
+    ImGui::TableSetupColumn("Buy price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+    ImGui::TableSetupColumn("Total buy price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+    ImGui::TableSetupColumn("", ImGuiTableColumnFlags_WidthFixed, 10 * GetScaleRatio());
+    ImGui::TableSetupColumn("Sell price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
     if(CalculateUndercut)
-      ImGui::TableSetupColumn("Sell price w/ undercut", ImGuiTableColumnFlags_WidthFixed, 160);
-    ImGui::TableSetupColumn("After Tax", ImGuiTableColumnFlags_WidthFixed, 160);
-    ImGui::TableSetupColumn("Total After Tax", ImGuiTableColumnFlags_WidthFixed, 160);
-    ImGui::TableSetupColumn("RoI%", ImGuiTableColumnFlags_WidthFixed, 50);
-    ImGui::TableSetupColumn("Profit", ImGuiTableColumnFlags_WidthFixed, 160);
-    ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_WidthFixed, 30);
-    ImGui::TableSetupColumn("Resolve", ImGuiTableColumnFlags_WidthFixed, 60);
-    ImGui::TableSetupColumn("Del", ImGuiTableColumnFlags_WidthFixed, 45);
+      ImGui::TableSetupColumn("Sell price w/ undercut", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+    ImGui::TableSetupColumn("After Tax", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+    ImGui::TableSetupColumn("Total After Tax", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+    ImGui::TableSetupColumn("RoI%", ImGuiTableColumnFlags_WidthFixed, 50 * GetScaleRatio());
+    ImGui::TableSetupColumn("Profit", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+    ImGui::TableSetupColumn("Edit", ImGuiTableColumnFlags_WidthFixed, 30 * GetScaleRatio());
+    ImGui::TableSetupColumn("Resolve", ImGuiTableColumnFlags_WidthFixed, 60 * GetScaleRatio());
+    ImGui::TableSetupColumn("Del", ImGuiTableColumnFlags_WidthFixed, 45 * GetScaleRatio());
     ImGui::TableHeadersRow();
 
     int ItemToRemove = -1;
@@ -90,7 +90,7 @@ void TrackerUI::Render()
         ImGui::TableNextColumn();
         if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
         {
-          ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+          ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
           ImGui::SameLine();
         }
         ImGui::Text(Data.Name.c_str());

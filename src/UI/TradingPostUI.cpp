@@ -16,12 +16,13 @@ void TradingPostUI::Render()
 {
   int AutoUpdateTime = FAddon->GetSettings()->AutoUpdateTradingPostSeconds();
   bool AutoUpdate = FAddon->GetSettings()->AutoUpdateTradingPost();
+  const float TabWidth = 830.0f;
 
   if (Visible)
   {
     if (ImGui::Begin("Trading Post", &Visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
     {
-      if (ImGui::BeginTabBar("MyTabBar"))
+      if (ImGui::BeginTabBar("Trading Post Tab bar"))
       {
         if (ImGui::BeginTabItem("Buying"))
         {
@@ -38,19 +39,22 @@ void TradingPostUI::Render()
           }
           if (FAddon->GetModules()->CommerceData->IsUpdatingCurrenBuys())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Transactions...");
           }
           else if (FAddon->GetModules()->ItemData->IsUpdatingItems())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Items...");
           }
 
+          ImGui::BeginChild("BuyingChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
+
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetCurrentBuys(), TradingPostTableType_Buying);
 
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -69,18 +73,21 @@ void TradingPostUI::Render()
           }
           if (FAddon->GetModules()->CommerceData->IsUpdatingCurrenSells())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Transactions...");
           }
           else if (FAddon->GetModules()->ItemData->IsUpdatingItems())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Items...");
           }
 
+          ImGui::BeginChild("SellingChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
+
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetCurrentSells(), TradingPostTableType_Selling);
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -99,19 +106,22 @@ void TradingPostUI::Render()
           }
           if (FAddon->GetModules()->CommerceData->IsUpdatingHistoryBuys())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Transactions...");
           }
           else if (FAddon->GetModules()->ItemData->IsUpdatingItems())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Items...");
           }
 
+          ImGui::BeginChild("BoughtChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
+
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetHistoryBuys(), TradingPostTableType_Bought);
 
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -130,19 +140,22 @@ void TradingPostUI::Render()
           }
           if (FAddon->GetModules()->CommerceData->IsUpdatingHistorySells())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Transactions...");
           }
           else if (FAddon->GetModules()->ItemData->IsUpdatingItems())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Items...");
           }
 
+          ImGui::BeginChild("SoldChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
+
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetHistorySells(), TradingPostTableType_Sold);
 
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -161,14 +174,14 @@ void TradingPostUI::Render()
           }
           if (FAddon->GetModules()->CommerceData->IsUpdatingDelivery())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Delivery...");
           }
           else if (FAddon->GetModules()->ItemData->IsUpdatingItems())
           {
-            ImGui::SameLine(ImGui::GetContentRegionAvail().x - 180.0f);
-            ImGui::SetNextItemWidth(180.0f);
+            ImGui::SameLine(ImGui::GetContentRegionAvail().x - (180.0f * GetScaleRatio()));
+            ImGui::SetNextItemWidth(180.0f * GetScaleRatio());
             ImGui::Text("Fetching Items...");
           }
 
@@ -176,11 +189,13 @@ void TradingPostUI::Render()
           ImGui::SameLine();
           CurrencyDisplay::Render(FAddon, FAddon->GetModules()->CommerceData->GetDeliveryData()->Coins);
 
+          ImGui::BeginChild("PickupChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
+
           if (ImGui::BeginTable("Items", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
           {
-            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
-            ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
-            ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultHide, 50);
+            ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350 * GetScaleRatio());
+            ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70 * GetScaleRatio());
+            ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultHide, 50 * GetScaleRatio());
             ImGui::TableHeadersRow();
 
             unsigned int counter = 0;
@@ -194,7 +209,7 @@ void TradingPostUI::Render()
                 ImGui::TableNextColumn();
                 if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
                 {
-                  ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+                  ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
                   ImGui::SameLine();
                 }
                 ImGui::Text(Data.Name.c_str());
@@ -215,6 +230,7 @@ void TradingPostUI::Render()
             }
             ImGui::EndTable();
           }
+          ImGui::EndChild();
           ImGui::EndTabItem();
         }
         // End the tab bar
@@ -229,27 +245,27 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
 {
   if (ImGui::BeginTable("Items", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
   {
-    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350);
-    ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70);
+    ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350 * GetScaleRatio());
+    ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70 * GetScaleRatio());
     switch (type)
     {
     case TradingPostTableType_Buying:
     case TradingPostTableType_Selling:
-      ImGui::TableSetupColumn("Listing price", ImGuiTableColumnFlags_WidthFixed, 160);
-      ImGui::TableSetupColumn("Total listing price", ImGuiTableColumnFlags_WidthFixed, 160);
+      ImGui::TableSetupColumn("Listing price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+      ImGui::TableSetupColumn("Total listing price", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
       break;
     case TradingPostTableType_Bought:
-      ImGui::TableSetupColumn("Bought for", ImGuiTableColumnFlags_WidthFixed, 160);
-      ImGui::TableSetupColumn("Total Bought for", ImGuiTableColumnFlags_WidthFixed, 160);
+      ImGui::TableSetupColumn("Bought for", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+      ImGui::TableSetupColumn("Total Bought for", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
       break;
     case TradingPostTableType_Sold:
-      ImGui::TableSetupColumn("Sold for", ImGuiTableColumnFlags_WidthFixed, 160);
-      ImGui::TableSetupColumn("Total sold for", ImGuiTableColumnFlags_WidthFixed, 160);
+      ImGui::TableSetupColumn("Sold for", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
+      ImGui::TableSetupColumn("Total sold for", ImGuiTableColumnFlags_WidthFixed, 160 * GetScaleRatio());
       break;
     default:
       break;
     }
-    ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultHide, 50);
+    ImGui::TableSetupColumn("Track", ImGuiTableColumnFlags_WidthFixed | ImGuiTableColumnFlags_DefaultHide, 50 * GetScaleRatio());
     ImGui::TableHeadersRow();
     unsigned int counter = 0;
     for (const TransactionData& item : *transactions)
@@ -262,7 +278,7 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
         ImGui::TableNextColumn();
         if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
         {
-          ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+          ImGui::Image((ImTextureID)tex->Resource, ImVec2(18 * GetScaleRatio(), 18 * GetScaleRatio()));
           ImGui::SameLine();
         }
         ImGui::Text(Data.Name.c_str());

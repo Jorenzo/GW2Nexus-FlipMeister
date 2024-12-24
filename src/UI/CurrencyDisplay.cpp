@@ -28,7 +28,7 @@ void CurrencyDisplay::Render(Addon* addon, int value)
     if (Texture* tex = addon->GetAPI()->GetTexture(TEX_GOLD))
     {
       ImGui::SameLine();
-      ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+      ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
     }
     ImGui::SameLine();
   }
@@ -43,7 +43,7 @@ void CurrencyDisplay::Render(Addon* addon, int value)
     if (Texture* tex = addon->GetAPI()->GetTexture(TEX_SILVER))
     {
       ImGui::SameLine();
-      ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+      ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
     }
     ImGui::SameLine();
   }
@@ -56,6 +56,6 @@ void CurrencyDisplay::Render(Addon* addon, int value)
   if (Texture* tex = addon->GetAPI()->GetTexture(TEX_COPPER))
   {
     ImGui::SameLine();
-    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18, 18));
+    ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
   }
 }

@@ -222,6 +222,7 @@
     <ClInclude Include="src\UI\TrackerUI.h" />
     <ClInclude Include="src\UI\TradingPostUI.h" />
     <ClInclude Include="src\Util\Colors.h" />
+    <ClInclude Include="src\Util\Scale.h" />
     <ClInclude Include="src\Util\Settings.h" />
     <ClInclude Include="src\Util\GW2API.h" />
     <ClInclude Include="src\Util\HTTPClient.h" />

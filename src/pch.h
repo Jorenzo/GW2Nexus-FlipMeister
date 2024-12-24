@@ -20,6 +20,8 @@
 
 class Addon;
 
+#include "util/scale.h"
+
 #include "UI/CurrencyDisplay.h"
 #include "UI/CurrencyInputField.h"
 
