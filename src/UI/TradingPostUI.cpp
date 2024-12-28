@@ -16,7 +16,6 @@ void TradingPostUI::Render()
 {
   int AutoUpdateTime = FAddon->GetSettings()->AutoUpdateTradingPostSeconds();
   bool AutoUpdate = FAddon->GetSettings()->AutoUpdateTradingPost();
-  const float TabWidth = 830.0f;
 
   if (Visible)
   {
@@ -50,11 +49,8 @@ void TradingPostUI::Render()
             ImGui::Text("Fetching Items...");
           }
 
-          ImGui::BeginChild("BuyingChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
-
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetCurrentBuys(), TradingPostTableType_Buying);
 
-          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -84,10 +80,7 @@ void TradingPostUI::Render()
             ImGui::Text("Fetching Items...");
           }
 
-          ImGui::BeginChild("SellingChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
-
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetCurrentSells(), TradingPostTableType_Selling);
-          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -117,14 +110,10 @@ void TradingPostUI::Render()
             ImGui::Text("Fetching Items...");
           }
 
-          ImGui::BeginChild("BoughtChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
-
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetHistoryBuys(), TradingPostTableType_Bought);
 
-          ImGui::EndChild();
           ImGui::EndTabItem();
         }
-
         if (ImGui::BeginTabItem("Sold"))
         {
           if (AutoUpdate && SoldRefreshTimer.GetSecondsPassed() > AutoUpdateTime)
@@ -151,11 +140,8 @@ void TradingPostUI::Render()
             ImGui::Text("Fetching Items...");
           }
 
-          ImGui::BeginChild("SoldChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
-
           RenderTransactionsTable(FAddon->GetModules()->CommerceData->GetHistorySells(), TradingPostTableType_Sold);
 
-          ImGui::EndChild();
           ImGui::EndTabItem();
         }
 
@@ -188,8 +174,6 @@ void TradingPostUI::Render()
           ImGui::Text("Pickup: ");
           ImGui::SameLine();
           CurrencyDisplay::Render(FAddon, FAddon->GetModules()->CommerceData->GetDeliveryData()->Coins);
-
-          ImGui::BeginChild("PickupChild", ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio()), false);
 
           if (ImGui::BeginTable("Items", 3, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
           {
@@ -230,7 +214,6 @@ void TradingPostUI::Render()
             }
             ImGui::EndTable();
           }
-          ImGui::EndChild();
           ImGui::EndTabItem();
         }
         // End the tab bar
@@ -243,7 +226,12 @@ void TradingPostUI::Render()
 
 void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* transactions, TradingPostTableType type)
 {
-  if (ImGui::BeginTable("Items", 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit))
+  const float TabWidth = 850.0f;
+  std::string TableName = "Items";
+  std::string ChildName = "ItemsChild";
+  TableName += std::to_string(type);
+  ChildName += std::to_string(type);
+  if (ImGui::BeginTable(TableName.c_str(), 5, ImGuiTableFlags_RowBg | ImGuiTableFlags_SizingFixedFit | ImGuiTableFlags_ScrollY, ImVec2(TabWidth * GetScaleRatio(), 600.0f * GetScaleRatio())))
   {
     ImGui::TableSetupColumn("Name", ImGuiTableColumnFlags_WidthFixed, 350 * GetScaleRatio());
     ImGui::TableSetupColumn("Quantity", ImGuiTableColumnFlags_WidthFixed, 70 * GetScaleRatio());
@@ -271,6 +259,7 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
     for (const TransactionData& item : *transactions)
     {
       counter++;
+      ImGui::PushID(counter);
       ItemData Data;
       if (FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
       {
@@ -289,7 +278,6 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
         ImGui::TableNextColumn();
         CurrencyDisplay::Render(FAddon, item.Price * item.Quantity);
         ImGui::TableNextColumn();
-        ImGui::PushID(counter);
         if (ImGui::Button("Track"))
         {
           TrackedItem trackedItem;
@@ -298,8 +286,8 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
           trackedItem.Quantity = item.Quantity;
           FAddon->GetUI()->NewTrackerItem->Show(trackedItem);
         }
-        ImGui::PopID();
       }
+      ImGui::PopID();
     }
 
     ImGui::EndTable();

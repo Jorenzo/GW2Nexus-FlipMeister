@@ -96,7 +96,7 @@ void Addon::AddonPreRender()
 
 void Addon::AddonRender()
 {
-  ImGuiIO& io = ImGui::GetIO();
+  //ImGuiIO& io = ImGui::GetIO();
 
   if (Visible)
   {
@@ -132,12 +132,15 @@ void Addon::AddonRender()
 
       UI.Tracker->Render();
 
+
+      //bool show = true;
+      //ImGui::ShowDemoWindow(&show);
       ImGui::End();
     }
   }
 
-  UI.CompletedTracker->Render();
   UI.TradingPost->Render();
+  UI.CompletedTracker->Render();
   UI.NewTrackerItem->Render();
   UI.CompleteTrackedItem->Render();
 }
