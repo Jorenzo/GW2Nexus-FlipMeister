@@ -73,25 +73,33 @@ void Addon::AddonUnload()
 
   APIDefs->DeregisterKeybind(ADDON_VISIBILITY_KEYBIND);
 
-  delete FHTTPClient;
-  delete FSettings;
-  delete Modules.CommerceData;
-  delete Modules.CompletedTracker;
-  delete Modules.ItemData;
-  delete Modules.Tracker;
   delete UI.CompletedTracker;
   delete UI.CompleteTrackedItem;
   delete UI.TradingPost;
   delete UI.NewTrackerItem;
   delete UI.Tracker;
+  UI = {};
+  delete Modules.CommerceData;
+  delete Modules.CompletedTracker;
+  delete Modules.ItemData;
+  delete Modules.Tracker;
+  Modules = {};
+  delete FHTTPClient;
+  FHTTPClient = nullptr;
+  delete FSettings;
+  FSettings = nullptr;
 }
 
 void Addon::AddonPreRender()
 {
-  FHTTPClient->UpdateRequests();
-  FSettings->Update();
-  Modules.CommerceData->Update();
-  Modules.ItemData->Update();
+  if(FHTTPClient)
+    FHTTPClient->UpdateRequests();
+  if(FSettings)
+    FSettings->Update();
+  if(Modules.CommerceData)
+    Modules.CommerceData->Update();
+  if(Modules.ItemData)
+    Modules.ItemData->Update();
 }
 
 void Addon::AddonRender()
@@ -116,22 +124,25 @@ void Addon::AddonRender()
       ImGui::Separator();
       ImGui::Separator();
 
-      if (ImGui::Button("Open Trading Post Transactions", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
+      if (UI.TradingPost && ImGui::Button("Open Trading Post Transactions", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
       {
         UI.TradingPost->Open();
       }
-      ImGui::SameLine();
-      if (ImGui::Button("Open Completed Tracked Items", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
+      if (UI.CompletedTracker)
       {
-        UI.CompletedTracker->Open();
+        ImGui::SameLine();
+        if (ImGui::Button("Open Completed Tracked Items", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
+        {
+          UI.CompletedTracker->Open();
+        }
       }
 
       //ImGui::Text("UI Tick: %u", nullptr != Entry.MumbleLink ? Entry.MumbleLink->UITick : 0 );
 
       //ImGui::Text("%s", nullptr != Entry.NexusLink ? Entry.NexusLink->IsMoving ? "Currently moving!" : "Currently standing still." : "We don't know whether we are standing or moving? NexusLink seems to be empty." );
 
-      UI.Tracker->Render();
-
+      if(UI.Tracker)
+        UI.Tracker->Render();
 
       //bool show = true;
       //ImGui::ShowDemoWindow(&show);
@@ -139,10 +150,14 @@ void Addon::AddonRender()
     }
   }
 
-  UI.TradingPost->Render();
-  UI.CompletedTracker->Render();
-  UI.NewTrackerItem->Render();
-  UI.CompleteTrackedItem->Render();
+  if(UI.TradingPost)
+    UI.TradingPost->Render();
+  if(UI.CompletedTracker)
+    UI.CompletedTracker->Render();
+  if(UI.NewTrackerItem)
+    UI.NewTrackerItem->Render();
+  if(UI.CompleteTrackedItem)
+    UI.CompleteTrackedItem->Render();
 }
 
 void Addon::AddonOptions()

@@ -259,9 +259,8 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
     for (const TransactionData& item : *transactions)
     {
       counter++;
-      ImGui::PushID(counter);
       ItemData Data;
-      if (FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
+      if (FAddon->GetModules() && FAddon->GetModules()->ItemData && FAddon->GetModules()->ItemData->RequestItemData(item.ItemID, Data))
       {
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
@@ -278,6 +277,7 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
         ImGui::TableNextColumn();
         CurrencyDisplay::Render(FAddon, item.Price * item.Quantity);
         ImGui::TableNextColumn();
+        ImGui::PushID(counter);
         if (ImGui::Button("Track"))
         {
           TrackedItem trackedItem;
@@ -286,8 +286,8 @@ void TradingPostUI::RenderTransactionsTable(const std::vector<TransactionData>* 
           trackedItem.Quantity = item.Quantity;
           FAddon->GetUI()->NewTrackerItem->Show(trackedItem);
         }
+        ImGui::PopID();
       }
-      ImGui::PopID();
     }
 
     ImGui::EndTable();
