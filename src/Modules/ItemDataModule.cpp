@@ -56,7 +56,7 @@ void ItemDataModule::TrySyncItems()
 
           //request a texture
           std::pair<std::string, std::string> splitURL = HTTPClient::SplitRemoteFromEndpoint(item.IconUrl);
-          FAddon->GetAPI()->LoadTextureFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
+          FAddon->GetAPI()->Textures.LoadFromURL(item.TextureID.c_str(), splitURL.first.c_str(), splitURL.second.c_str(), nullptr);
         }
         catch (const nlohmann::json::exception& e)
         {

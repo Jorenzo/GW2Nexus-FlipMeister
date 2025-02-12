@@ -109,7 +109,7 @@ void Settings::WriteSettings()
 {
   nlohmann::json SettingsJson = Data;
 
-  std::string path = FAddon->GetAPI()->GetAddonDirectory(ADDON_DIRECTORY_NAME);
+  std::string path = FAddon->GetAPI()->Paths.GetAddonDirectory(ADDON_DIRECTORY_NAME);
   path += "\\settings.json";
 
   std::filesystem::path dirPath = std::filesystem::path(path).parent_path();
@@ -140,7 +140,7 @@ void Settings::WriteSettings()
 
 void Settings::ReadSettings()
 {
-  std::string path = FAddon->GetAPI()->GetAddonDirectory(ADDON_DIRECTORY_NAME);
+  std::string path = FAddon->GetAPI()->Paths.GetAddonDirectory(ADDON_DIRECTORY_NAME);
   path += "\\settings.json";
   std::ifstream inFile(path);
 

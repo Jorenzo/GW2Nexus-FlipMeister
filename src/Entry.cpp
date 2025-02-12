@@ -45,18 +45,18 @@ extern "C" __declspec(dllexport) AddonDefinition* GetAddonDef()
   return &AddonDef;
 }
 
-void ProcessKeybind(const char* aIdentifier)
+void ProcessKeybind(const char* aIdentifier, bool aIsRelease)
 {
-  addon.ProcessKeybind(aIdentifier);
+  addon.ProcessKeybind(aIdentifier, aIsRelease);
 }
 
 void AddonLoad(AddonAPI* aApi)
 {
-  aApi->RegisterRender(ERenderType_Render, AddonRender);
-  aApi->RegisterRender(ERenderType_PreRender, AddonPreRender);
-  aApi->RegisterRender(ERenderType_OptionsRender, AddonOptions);
+  aApi->Renderer.Register(ERenderType_Render, AddonRender);
+  aApi->Renderer.Register(ERenderType_PreRender, AddonPreRender);
+  aApi->Renderer.Register(ERenderType_OptionsRender, AddonOptions);
 
-  aApi->RegisterKeybindWithString(ADDON_VISIBILITY_KEYBIND, &ProcessKeybind, "ALT+F");
+  aApi->InputBinds.RegisterWithString(ADDON_VISIBILITY_KEYBIND, &ProcessKeybind, "ALT+F");
 
   addon.AddonLoad(aApi);
 
@@ -67,9 +67,9 @@ void AddonUnload()
 {
   addon.AddonUnload();
 
-  addon.GetAPI()->DeregisterRender(AddonRender);
-  addon.GetAPI()->DeregisterRender(AddonPreRender);
-  addon.GetAPI()->DeregisterRender(AddonOptions);
+  addon.GetAPI()->Renderer.Deregister(AddonRender);
+  addon.GetAPI()->Renderer.Deregister(AddonPreRender);
+  addon.GetAPI()->Renderer.Deregister(AddonOptions);
 
   addon.Log(INFO, ADDON_LOG_NAME " Addon Unloaded");
 }

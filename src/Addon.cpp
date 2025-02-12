@@ -16,9 +16,9 @@ void Addon::SetHModule(HMODULE module)
   hSelf = module;
 }
 
-void Addon::ProcessKeybind(const char* aIdentifier)
+void Addon::ProcessKeybind(const char* aIdentifier, bool aIsRelease)
 {
-  if (strcmp(aIdentifier, ADDON_VISIBILITY_KEYBIND) == 0)
+  if (aIsRelease && strcmp(aIdentifier, ADDON_VISIBILITY_KEYBIND) == 0)
   {
     Visible = !Visible;
     return;
@@ -32,7 +32,7 @@ void Addon::AddonLoad(AddonAPI* aApi)
   ImGui::SetCurrentContext((ImGuiContext*)APIDefs->ImguiContext);
   ImGui::SetAllocatorFunctions((void* (*)(size_t, void*))APIDefs->ImguiMalloc, (void(*)(void*, void*))APIDefs->ImguiFree);
 
-  NexusLink = (NexusLinkData*)APIDefs->GetResource("DL_NEXUS_LINK");
+  NexusLink = (NexusLinkData*)APIDefs->DataLink.Get("DL_NEXUS_LINK");
   //Entry.MumbleLink = (Mumble::Data*)Entry.APIDefs->GetResource("DL_MUMBLE_LINK");
 
   FHTTPClient = new HTTPClient(this);
@@ -40,9 +40,11 @@ void Addon::AddonLoad(AddonAPI* aApi)
   FSettings = new Settings(this);
   FSettings->Init();
 
-  APIDefs->LoadTextureFromResource(LOGO, FM_Logo, hSelf, nullptr);
-  APIDefs->LoadTextureFromResource(QUICKACCESS, FM_QuickAccess, hSelf, nullptr);
-  APIDefs->LoadTextureFromResource(QUICKACCESS_HOVER, FM_QuickAccessHover, hSelf, nullptr);
+  APIDefs->UI.RegisterCloseOnEscape(ADDON_NAME, &Visible);
+
+  APIDefs->Textures.LoadFromResource(LOGO, FM_Logo, hSelf, nullptr);
+  APIDefs->Textures.LoadFromResource(QUICKACCESS, FM_QuickAccess, hSelf, nullptr);
+  APIDefs->Textures.LoadFromResource(QUICKACCESS_HOVER, FM_QuickAccessHover, hSelf, nullptr);
   CurrencyDisplay::SetupResources(this);
 
   if (FSettings->ShowQuickAccessIcon())
@@ -71,7 +73,7 @@ void Addon::AddonUnload()
   if (FSettings->ShowQuickAccessIcon())
     RemoveQuickAccessIcon();
 
-  APIDefs->DeregisterKeybind(ADDON_VISIBILITY_KEYBIND);
+  APIDefs->InputBinds.Deregister(ADDON_VISIBILITY_KEYBIND);
 
   delete UI.CompletedTracker;
   delete UI.CompleteTrackedItem;
@@ -110,7 +112,7 @@ void Addon::AddonRender()
   {
     if (ImGui::Begin(ADDON_NAME, &Visible, ImGuiWindowFlags_NoCollapse))
     {
-      Texture* LogoTexture = APIDefs->GetTexture(LOGO);
+      Texture* LogoTexture = APIDefs->Textures.Get(LOGO);
       if (LogoTexture)
       {
         float scale = 0.8f * GetScaleRatio();
@@ -219,10 +221,10 @@ void Addon::ShowQuickAccessIconChanged()
 
 void Addon::AddQuickAccessIcon()
 {
-  APIDefs->AddShortcut(ADDON_SHORTCUT, QUICKACCESS, QUICKACCESS_HOVER, ADDON_VISIBILITY_KEYBIND, "");
+  APIDefs->QuickAccess.Add(ADDON_SHORTCUT, QUICKACCESS, QUICKACCESS_HOVER, ADDON_VISIBILITY_KEYBIND, "");
 }
 
 void Addon::RemoveQuickAccessIcon()
 {
-  APIDefs->RemoveShortcut(ADDON_SHORTCUT);
+  APIDefs->QuickAccess.Remove(ADDON_SHORTCUT);
 }

@@ -30,7 +30,7 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   }
   ImGui::PopID();
   ImGui::PopStyleColor();
-  if (Texture* tex = FAddon->GetAPI()->GetTexture(TEX_GOLD))
+  if (Texture* tex = FAddon->GetAPI()->Textures.Get(TEX_GOLD))
   {
     ImGui::SameLine();
     ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
@@ -47,7 +47,7 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   }
   ImGui::PopID();
   ImGui::PopStyleColor();
-  if (Texture* tex = FAddon->GetAPI()->GetTexture(TEX_SILVER))
+  if (Texture* tex = FAddon->GetAPI()->Textures.Get(TEX_SILVER))
   {
     ImGui::SameLine();
     ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
@@ -64,7 +64,7 @@ bool CurrencyInputField::Render(int& outValue, int minValue, const std::string& 
   }
   ImGui::PopID();
   ImGui::PopStyleColor();
-  if (Texture* tex = FAddon->GetAPI()->GetTexture(TEX_COPPER))
+  if (Texture* tex = FAddon->GetAPI()->Textures.Get(TEX_COPPER))
   {
     ImGui::SameLine();
     ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));

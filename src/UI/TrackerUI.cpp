@@ -88,7 +88,7 @@ void TrackerUI::Render()
       {
         ImGui::TableNextRow();
         ImGui::TableNextColumn();
-        if (Texture* tex = FAddon->GetAPI()->GetTexture(Data.TextureID.c_str()))
+        if (Texture* tex = FAddon->GetAPI()->Textures.Get(Data.TextureID.c_str()))
         {
           ImGui::Image((ImTextureID)tex->Resource, ImVec2(18.0f * GetScaleRatio(), 18.0f * GetScaleRatio()));
           ImGui::SameLine();

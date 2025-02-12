@@ -43,7 +43,7 @@ class Addon
 public:
   Addon();
   void SetHModule(HMODULE module);
-  void ProcessKeybind(const char* aIdentifier);
+  void ProcessKeybind(const char* aIdentifier, bool aIsRelease);
   void AddonLoad(AddonAPI* aApi);
   void AddonUnload();
   void AddonPreRender();

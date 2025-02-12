@@ -32,7 +32,7 @@ void TrackerModule::RemoveTrackedItem(int index)
 
 void TrackerModule::ReadFromFile()
 {
-  std::string path = FAddon->GetAPI()->GetAddonDirectory(ADDON_DIRECTORY_NAME);
+  std::string path = FAddon->GetAPI()->Paths.GetAddonDirectory(ADDON_DIRECTORY_NAME);
   path += "\\tracker.json";
   std::ifstream inFile(path);
 
@@ -70,7 +70,7 @@ void TrackerModule::WriteToFile()
 {
   nlohmann::json data = TrackedItems;
 
-  std::string path = FAddon->GetAPI()->GetAddonDirectory(ADDON_DIRECTORY_NAME);
+  std::string path = FAddon->GetAPI()->Paths.GetAddonDirectory(ADDON_DIRECTORY_NAME);
   path += "\\tracker.json";
 
   std::filesystem::path dirPath = std::filesystem::path(path).parent_path();

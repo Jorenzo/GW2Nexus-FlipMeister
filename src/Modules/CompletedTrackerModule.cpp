@@ -32,7 +32,7 @@ void CompletedTrackerModule::RemoveCompletedItem(int index)
 
 void CompletedTrackerModule::ReadFromFile()
 {
-  std::string path = FAddon->GetAPI()->GetAddonDirectory(ADDON_DIRECTORY_NAME);
+  std::string path = FAddon->GetAPI()->Paths.GetAddonDirectory(ADDON_DIRECTORY_NAME);
   path += "\\completed.json";
   std::ifstream inFile(path);
 
@@ -70,7 +70,7 @@ void CompletedTrackerModule::WriteToFile()
 {
   nlohmann::json data = CompletedItems;
 
-  std::string path = FAddon->GetAPI()->GetAddonDirectory(ADDON_DIRECTORY_NAME);
+  std::string path = FAddon->GetAPI()->Paths.GetAddonDirectory(ADDON_DIRECTORY_NAME);
   path += "\\completed.json";
 
   std::filesystem::path dirPath = std::filesystem::path(path).parent_path();
