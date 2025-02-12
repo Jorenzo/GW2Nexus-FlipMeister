@@ -108,7 +108,7 @@ void Addon::AddonRender()
 
   if (Visible)
   {
-    if (ImGui::Begin(ADDON_NAME, &Visible, ImGuiWindowFlags_NoCollapse | ImGuiWindowFlags_AlwaysAutoResize))
+    if (ImGui::Begin(ADDON_NAME, &Visible, ImGuiWindowFlags_NoCollapse))
     {
       Texture* LogoTexture = APIDefs->GetTexture(LOGO);
       if (LogoTexture)
@@ -124,25 +124,50 @@ void Addon::AddonRender()
       ImGui::Separator();
       ImGui::Separator();
 
-      if (UI.TradingPost && ImGui::Button("Open Trading Post Transactions", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
+      if (UI.Tracker)
       {
-        UI.TradingPost->Open();
+        if (ImGui::Button("Tracker", ImVec2(200 * GetScaleRatio(), 30 * GetScaleRatio())))
+          CurrentPage = AddonPage_Tracker;
+      }
+      if (UI.TradingPost)
+      {
+        ImGui::SameLine();
+        if(ImGui::Button("Trading Post", ImVec2(200 * GetScaleRatio(), 30 * GetScaleRatio())))
+          CurrentPage = AddonPage_TradingPost;
       }
       if (UI.CompletedTracker)
       {
         ImGui::SameLine();
-        if (ImGui::Button("Open Completed Tracked Items", ImVec2(250 * GetScaleRatio(), 30 * GetScaleRatio())))
-        {
-          UI.CompletedTracker->Open();
-        }
+        if (ImGui::Button("Completed Tracked Items", ImVec2(200 * GetScaleRatio(), 30 * GetScaleRatio())))
+          CurrentPage = AddongPage_CompletedTrackedItems;
       }
 
+      ImGui::Separator();
       //ImGui::Text("UI Tick: %u", nullptr != Entry.MumbleLink ? Entry.MumbleLink->UITick : 0 );
 
       //ImGui::Text("%s", nullptr != Entry.NexusLink ? Entry.NexusLink->IsMoving ? "Currently moving!" : "Currently standing still." : "We don't know whether we are standing or moving? NexusLink seems to be empty." );
+      ImVec2 availableSpace = ImGui::GetContentRegionAvail();
+      ImGui::BeginChild("ScrollableSection", ImVec2(0, availableSpace.y), true);
 
-      if(UI.Tracker)
-        UI.Tracker->Render();
+      switch (CurrentPage)
+      {
+      case AddonPage_Tracker:
+        if(UI.Tracker)
+          UI.Tracker->Render();
+        break;
+      case AddonPage_TradingPost:
+        if (UI.TradingPost)
+          UI.TradingPost->Render();
+        break;
+      case AddongPage_CompletedTrackedItems:
+        if (UI.CompletedTracker)
+          UI.CompletedTracker->Render();
+        break;
+      default:
+        break;
+      }
+
+      ImGui::EndChild();
 
       //bool show = true;
       //ImGui::ShowDemoWindow(&show);
@@ -150,10 +175,6 @@ void Addon::AddonRender()
     }
   }
 
-  if(UI.TradingPost)
-    UI.TradingPost->Render();
-  if(UI.CompletedTracker)
-    UI.CompletedTracker->Render();
   if(UI.NewTrackerItem)
     UI.NewTrackerItem->Render();
   if(UI.CompleteTrackedItem)

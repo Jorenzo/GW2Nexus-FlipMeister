@@ -14,6 +14,13 @@
 #define DEBUG ELogLevel_DEBUG
 #define TRACE ELogLevel_TRACE
 
+enum AddonPage
+{
+  AddonPage_Tracker,
+  AddonPage_TradingPost,
+  AddongPage_CompletedTrackedItems
+};
+
 struct ModuleData
 {
   class TrackerModule* Tracker = nullptr;
@@ -66,4 +73,5 @@ private:
   UIData UI = {};
 
   bool Visible = false;
+  AddonPage CurrentPage = AddonPage_Tracker;
 };

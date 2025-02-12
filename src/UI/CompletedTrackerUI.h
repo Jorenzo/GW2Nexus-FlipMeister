@@ -10,5 +10,4 @@ public:
 private:
   Addon*                      FAddon = nullptr;
   int                         RemovedIndex = -1;
-  bool                        Visible = false;
 };
